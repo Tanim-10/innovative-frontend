@@ -34,6 +34,16 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 const ForgotPasswordPage = lazy(() => import("./pages/ForgotPasswordPage"));
 const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"));
 const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage"));
+const TutorRegisterPage = lazy(() => import("./pages/TutorRegisterPage"));
+const TutorDirectoryPage = lazy(() => import("./pages/TutorDirectoryPage"));
+const TutorProfilePage = lazy(() => import("./pages/TutorProfilePage"));
+const TutorDashboardPage = lazy(() => import("./pages/TutorDashboardPage"));
+const CourseCatalogPage = lazy(() => import("./pages/CourseCatalogPage"));
+const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));
+const CourseViewerPage = lazy(() => import("./pages/CourseViewerPage"));
+const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage"));
+const CreateWorkshopPage = lazy(() => import("./pages/CreateWorkshopPage"));
+const InternshipsPage = lazy(() => import("./pages/InternshipsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageFallback() {
@@ -79,7 +89,16 @@ const App = () => (
                   <Route path="/order/:orderId" element={<OrderDetailPage />} />
                   <Route path="/order-tracking" element={<OrderTrackingPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/robotics-courses" element={<ComingSoonPage title="Robotics Courses & Tutorials" />} />
+                  <Route path="/robotics-courses" element={<Layout><CourseCatalogPage /></Layout>} />
+                  <Route path="/course/:id" element={<Layout><CourseDetailPage /></Layout>} />
+                  <Route path="/classroom/:id" element={<CourseViewerPage />} />
+                  <Route path="/tutor-directory" element={<Layout><TutorDirectoryPage /></Layout>} />
+                  <Route path="/tutor/:id" element={<Layout><TutorProfilePage /></Layout>} />
+                  <Route path="/tutor-registration" element={<Layout><TutorRegisterPage /></Layout>} />
+                  <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
+                  <Route path="/workshops" element={<Layout><WorkshopsPage /></Layout>} />
+                  <Route path="/workshops/create" element={<Layout><CreateWorkshopPage /></Layout>} />
+                  <Route path="/internships" element={<Layout><InternshipsPage /></Layout>} />
                   <Route path="/project-kits" element={<ComingSoonPage title="Project Kits & Consultation" />} />
                   <Route path="/resources" element={<ComingSoonPage title="Resources & Ideas Hub" />} />
                   <Route path="*" element={<NotFound />} />

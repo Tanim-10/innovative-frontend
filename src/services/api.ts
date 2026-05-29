@@ -720,6 +720,210 @@ export const userApi = {
   },
 };
 
+// ============ TUTORS API ============
+export const tutorsApi = {
+  apply: async (data: { bio: string; expertise: string[] }) => {
+    return fetchWithAuth<User>('/api/tutors/apply', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+  getAll: async (params?: { search?: string; expertise?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.search) q.set('search', params.search);
+    if (params?.expertise) q.set('expertise', params.expertise);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return fetchWithAuth<User[]>(`/api/tutors${qs}`);
+  },
+  getById: async (id: string) => {
+    return fetchWithAuth<User>(`/api/tutors/${id}`);
+  },
+};
+
+// ============ COURSES API ============
+export const coursesApi = {
+  getAll: async (params?: { search?: string; difficulty?: string; topic?: string }) => {
+    const q = new URLSearchParams();
+    if (params?.search) q.set('search', params.search);
+    if (params?.difficulty) q.set('difficulty', params.difficulty);
+    if (params?.topic) q.set('topic', params.topic);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return fetchWithAuth<Course[]>(`/api/courses${qs}`);
+  },
+  getTutorCourses: async () => {
+    return fetchWithAuth<Course[]>('/api/courses/tutor');
+  },
+  getEnrolledCourses: async () => {
+    return fetchWithAuth<Course[]>('/api/courses/enrolled');
+  },
+  getById: async (id: string) => {
+    return fetchWithAuth<Course & { isEnrolled?: boolean }>(`/api/courses/${id}`);
+  },
+  create: async (data: Partial<Course>) => {
+    return fetchWithAuth<Course>('/api/courses', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  update: async (id: string, data: Partial<Course>) => {
+    return fetchWithAuth<Course>(`/api/courses/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+  deleteCourse: async (id: string) => {
+    return fetchWithAuth<{ message: string }>(`/api/courses/${id}`, {
+      method: 'DELETE',
+    });
+  },
+  getCourseViewer: async (id: string) => {
+    return fetchWithAuth<Course>(`/api/courses/${id}/viewer`);
+  },
+  purchase: async (id: string) => {
+    return fetchWithAuth<{
+      enrolled: boolean;
+      data: {
+        orderId?: string;
+        amount?: number;
+        currency?: string;
+        keyId?: string;
+        coursePrice?: number;
+        _id?: string;
+      };
+    }>(`/api/courses/${id}/purchase`, {
+      method: 'POST',
+    });
+  },
+  verifyPurchase: async (id: string, data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+    return fetchWithAuth<unknown>(`/api/courses/${id}/verify-purchase`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+// ============ SESSIONS API ============
+export const sessionsApi = {
+  createSlot: async (data: { date: string; time: string; topic: string; cost: number }) => {
+    return fetchWithAuth<SessionSlot>('/api/sessions/slots', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  getAvailableSlots: async (tutorId?: string) => {
+    const q = tutorId ? `?tutorId=${tutorId}` : '';
+    return fetchWithAuth<SessionSlot[]>(`/api/sessions/slots${q}`);
+  },
+  getTutorSlots: async () => {
+    return fetchWithAuth<SessionSlot[]>('/api/sessions/tutor');
+  },
+  getStudentSessions: async () => {
+    return fetchWithAuth<SessionSlot[]>('/api/sessions/student');
+  },
+  bookSlot: async (id: string) => {
+    return fetchWithAuth<{
+      booked: boolean;
+      data: {
+        orderId?: string;
+        amount?: number;
+        currency?: string;
+        keyId?: string;
+        cost?: number;
+        _id?: string;
+      };
+    }>(`/api/sessions/slots/${id}/book`, {
+      method: 'POST',
+    });
+  },
+  verifyBooking: async (id: string, data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
+    return fetchWithAuth<SessionSlot>(`/api/sessions/slots/${id}/verify-booking`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+};
+
+// ============ WORKSHOPS API ============
+export interface Workshop {
+  _id: string;
+  title: string;
+  description: string;
+  hostName: string;
+  hostEmail: string;
+  hostId: string | { _id: string; name: string; profileImage?: string; bio?: string };
+  date: string;
+  time: string;
+  duration: string;
+  meetingLink: string;
+  status: 'pending' | 'approved' | 'rejected';
+  enrolledStudents?: string[];
+}
+
+export const workshopsApi = {
+  getAll: async () => {
+    return fetchWithAuth<Workshop[]>('/api/workshops');
+  },
+  getEnrolled: async () => {
+    return fetchWithAuth<Workshop[]>('/api/workshops/enrolled');
+  },
+  getHosted: async () => {
+    return fetchWithAuth<Workshop[]>('/api/workshops/hosted');
+  },
+  create: async (data: {
+    title: string;
+    description: string;
+    date: string;
+    time: string;
+    duration: string;
+    meetingLink: string;
+  }) => {
+    return fetchWithAuth<Workshop>('/api/workshops', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  enroll: async (id: string) => {
+    return fetchWithAuth<Workshop>(`/api/workshops/${id}/enroll`, {
+      method: 'POST',
+    });
+  },
+};
+
+// ============ INTERNSHIPS API ============
+export interface InternshipApplication {
+  _id: string;
+  studentId: string;
+  name: string;
+  email: string;
+  mobile: string;
+  skills: string[];
+  resumeUrl: string;
+  coverLetter: string;
+  portfolioUrl?: string;
+  status: 'pending' | 'under-review' | 'shortlisted' | 'rejected';
+  createdAt: string;
+}
+
+export const internshipsApi = {
+  apply: async (data: {
+    name: string;
+    email: string;
+    mobile: string;
+    skills: string[];
+    resumeUrl: string;
+    coverLetter: string;
+    portfolioUrl?: string;
+  }) => {
+    return fetchWithAuth<InternshipApplication>('/api/internships/apply', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+  getMyApplications: async () => {
+    return fetchWithAuth<InternshipApplication[]>('/api/internships/my-applications');
+  },
+};
+
 // ============ TYPES ============
 export interface User {
   _id: string;
@@ -729,6 +933,47 @@ export interface User {
   /** Server may omit; false means number not OTP-verified for this account */
   mobileVerified?: boolean;
   addresses: Address[];
+  createdAt: string;
+  role?: 'student' | 'tutor' | 'admin';
+  tutorStatus?: 'pending' | 'approved' | 'rejected';
+  bio?: string;
+  expertise?: string[];
+}
+
+export interface Lecture {
+  _id?: string;
+  title: string;
+  description?: string;
+  videoUrl: string;
+  attachmentUrl?: string;
+}
+
+export interface Course {
+  _id: string;
+  tutorId: string | { _id: string; name: string; profileImage?: string; bio?: string; expertise?: string[] };
+  title: string;
+  description: string;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  topic: string;
+  price: number;
+  thumbnailUrl?: string;
+  lectures: Lecture[];
+  isPublished: boolean;
+  createdAt: string;
+  isEnrolled?: boolean;
+}
+
+export interface SessionSlot {
+  _id: string;
+  tutorId: string | { _id: string; name: string; profileImage?: string; bio?: string; expertise?: string[] };
+  date: string;
+  time: string;
+  topic: string;
+  cost: number;
+  status: 'available' | 'booked';
+  bookedBy?: string | { _id: string; name: string; email: string; mobile?: string };
+  paymentId?: string;
+  meetingLink?: string;
   createdAt: string;
 }
 

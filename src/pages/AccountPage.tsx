@@ -4,7 +4,7 @@ import {
   Package, Heart, Settings, MapPin, LogOut,
   ChevronRight, ExternalLink, Truck, Clock, CheckCircle2,
   Plus, Pencil, Trash2, Eye, EyeOff, ShoppingCart,
-  Copy, Check,
+  Copy, Check, GraduationCap, Calendar
 } from 'lucide-react';
 import Layout from '../components/Layout';
 import SEO from '@/components/SEO';
@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { ordersApi, userApi, Order, Address } from '../services/api';
+import { ordersApi, userApi, coursesApi, sessionsApi, Order, Address, Course, SessionSlot } from '../services/api';
 import { formatPrice } from '@/utils/price';
 import { normalizeIndianMobile10, isValidIndianMobile10 } from '@/utils/phone';
 import { PLACEHOLDER_IMAGE } from '@/constants/media';
@@ -37,6 +37,12 @@ const AccountPage = () => {
   const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  
+  // Courses and Sessions states
+  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  const [studentSessions, setStudentSessions] = useState<SessionSlot[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState(false);
+  const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   
   // Settings form state
   const [profileForm, setProfileForm] = useState({ name: '', mobile: '' });
@@ -82,7 +88,7 @@ const AccountPage = () => {
   }, [user]);
 
   useEffect(() => {
-    const allowed = ['orders', 'wishlist', 'settings', 'addresses', 'logout'] as const;
+    const allowed = ['orders', 'wishlist', 'settings', 'addresses', 'logout', 'courses', 'sessions'] as const;
     if (tabParam && (allowed as readonly string[]).includes(tabParam)) {
       setActiveTab(tabParam);
     }
@@ -138,6 +144,37 @@ const AccountPage = () => {
     if (isAuthenticated) {
       fetchOrders();
     }
+  }, [isAuthenticated]);
+
+  // Fetch enrolled courses and booked sessions
+  useEffect(() => {
+    const fetchCoursesAndSessions = async () => {
+      if (!isAuthenticated) return;
+      setIsLoadingCourses(true);
+      setIsLoadingSessions(true);
+      try {
+        const courseRes = await coursesApi.getEnrolledCourses();
+        if (courseRes.success) {
+          setEnrolledCourses(courseRes.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch enrolled courses:', err);
+      } finally {
+        setIsLoadingCourses(false);
+      }
+
+      try {
+        const sessionRes = await sessionsApi.getStudentSessions();
+        if (sessionRes.success) {
+          setStudentSessions(sessionRes.data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch student sessions:', err);
+      } finally {
+        setIsLoadingSessions(false);
+      }
+    };
+    fetchCoursesAndSessions();
   }, [isAuthenticated]);
 
   // Get wishlist products - wishlistItems is Product[]
@@ -385,6 +422,16 @@ const AccountPage = () => {
                 <span className="hidden sm:inline">My Orders</span>
                 <span className="sm:hidden">Orders</span>
               </TabsTrigger>
+              <TabsTrigger value="courses" className="gap-2 min-h-[44px] touch-manipulation data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <GraduationCap className="w-4 h-4" />
+                <span className="hidden sm:inline">My Courses</span>
+                <span className="sm:hidden">Courses</span>
+              </TabsTrigger>
+              <TabsTrigger value="sessions" className="gap-2 min-h-[44px] touch-manipulation data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Calendar className="w-4 h-4" />
+                <span className="hidden sm:inline">My Sessions</span>
+                <span className="sm:hidden">Sessions</span>
+              </TabsTrigger>
               <TabsTrigger value="wishlist" className="gap-2 min-h-[44px] touch-manipulation data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Heart className="w-4 h-4" />
                 <span className="hidden sm:inline">Wishlist</span>
@@ -584,6 +631,59 @@ const AccountPage = () => {
             {/* Settings Tab */}
             <TabsContent value="settings" className="space-y-4">
               <div className="grid gap-6 md:grid-cols-2">
+                {/* Tutor Options CTA */}
+                {user?.role === 'tutor' && (
+                  <Card className="bg-[#101726]/60 backdrop-blur-sm border-primary/40 md:col-span-2">
+                    <CardHeader>
+                      <CardTitle className="text-primary flex items-center gap-2">
+                        <GraduationCap className="w-5 h-5" />
+                        Tutor Workspace
+                      </CardTitle>
+                      <CardDescription>
+                        You are registered as an instructor. Access your dashboard to manage courses, curriculum, lectures and session slot bookings.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Button onClick={() => navigate('/tutor-dashboard')} className="gap-2 font-semibold">
+                        Go to Tutor Dashboard
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+                {(!user?.role || user?.role === 'student') && (
+                  <Card className="bg-[#101726]/60 backdrop-blur-sm border-border md:col-span-2">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-foreground">
+                        <GraduationCap className="w-5 h-5 text-primary" />
+                        Share Your Robotics Expertise
+                      </CardTitle>
+                      <CardDescription>
+                        Apply to become a verified robotics tutor on Innovative Hub. Design courses, schedule 1-on-1 tutoring sessions, and earn sharing your knowledge.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {user?.tutorStatus === 'pending' ? (
+                        <Badge variant="outline" className="text-amber-500 border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-semibold">
+                          Tutor Application Pending Approval
+                        </Badge>
+                      ) : user?.tutorStatus === 'rejected' ? (
+                        <div className="space-y-2">
+                          <Badge variant="outline" className="text-destructive border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-semibold">
+                            Application Rejected
+                          </Badge>
+                          <p className="text-xs text-muted-foreground">Please contact support or re-apply after addressing feedback.</p>
+                          <Button size="sm" onClick={() => navigate('/tutor-registration')}>Re-apply Now</Button>
+                        </div>
+                      ) : (
+                        <Button onClick={() => navigate('/tutor-registration')} className="gap-2 font-semibold">
+                          Become a Tutor
+                          <ChevronRight className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
                 {/* Profile Settings */}
                 <Card className="bg-card/60 backdrop-blur-sm border-border">
                   <CardHeader>
@@ -897,6 +997,126 @@ const AccountPage = () => {
                           </div>
                         </div>
                       ); })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* My Courses Tab */}
+            <TabsContent value="courses" className="space-y-4">
+              <Card className="bg-card/60 backdrop-blur-sm border-border">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <GraduationCap className="w-5 h-5 text-primary" />
+                    Enrolled Courses
+                  </CardTitle>
+                  <CardDescription>Access your virtual robotics classrooms</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingCourses ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+                    </div>
+                  ) : enrolledCourses.length === 0 ? (
+                    <div className="text-center py-12">
+                      <GraduationCap className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground mb-4">You are not enrolled in any courses yet</p>
+                      <Button asChild>
+                        <Link to="/robotics-courses">Browse Robotics Academy</Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {enrolledCourses.map((course) => (
+                        <Card key={course._id} className="bg-background/40 border border-border flex flex-col justify-between overflow-hidden">
+                          <img
+                            src={course.thumbnailUrl || PLACEHOLDER_IMAGE}
+                            alt={course.title}
+                            className="w-full h-36 object-cover border-b border-border/40"
+                          />
+                          <CardHeader className="p-4">
+                            <CardTitle className="text-sm font-bold line-clamp-1">{course.title}</CardTitle>
+                            <CardDescription className="text-xs">
+                              Instructor: {typeof course.tutorId === 'object' ? (course.tutorId as any).name : 'Tutor'}
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent className="px-4 pb-4 pt-0">
+                            <Button size="sm" className="w-full font-semibold" asChild>
+                              <Link to={`/classroom/${course._id}`}>Go to Classroom</Link>
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* My Booked Sessions Tab */}
+            <TabsContent value="sessions" className="space-y-4">
+              <Card className="bg-card/60 backdrop-blur-sm border-border">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    My Mentoring Sessions
+                  </CardTitle>
+                  <CardDescription>View your scheduled 1-on-1 robotics consultations</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {isLoadingSessions ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+                    </div>
+                  ) : studentSessions.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Calendar className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                      <p className="text-muted-foreground mb-4">No mentoring sessions booked yet</p>
+                      <Button asChild>
+                        <Link to="/tutor-directory">Find a Tutor</Link>
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {studentSessions.map((session) => (
+                        <div key={session._id} className="border border-border rounded-lg p-4 bg-background/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-2">
+                              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-primary/20 capitalize">
+                                {session.topic}
+                              </Badge>
+                              <span className="text-xs text-muted-foreground">
+                                Fee Paid: ₹{formatPrice(session.cost)}
+                              </span>
+                            </div>
+                            <h4 className="font-bold text-sm text-foreground">
+                              {new Date(session.date).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">Time Slot: {session.time}</p>
+                            {session.tutorId && typeof session.tutorId === 'object' && (
+                              <p className="text-xs text-muted-foreground">
+                                Tutor: <span className="font-semibold text-foreground">{(session.tutorId as any).name}</span>
+                              </p>
+                            )}
+                          </div>
+                          
+                          <div className="flex flex-col sm:flex-row gap-3">
+                            {session.meetingLink ? (
+                              <Button size="sm" className="gap-2 font-bold" asChild>
+                                <a href={session.meetingLink} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink className="w-4 h-4" />
+                                  Join Session
+                                </a>
+                              </Button>
+                            ) : (
+                              <Badge variant="outline" className="text-muted-foreground">
+                                Join Link Not Available
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </CardContent>
