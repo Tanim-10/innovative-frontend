@@ -632,7 +632,8 @@ const AccountPage = () => {
             <TabsContent value="settings" className="space-y-4">
               <div className="grid gap-6 md:grid-cols-2">
                 {/* Tutor Options CTA */}
-                {user?.role === 'tutor' && (
+                {/* Tutor Workspace (Approved Tutors) */}
+                {user?.role === 'tutor' && user?.tutorStatus === 'approved' && (
                   <Card className="bg-[#101726]/60 backdrop-blur-sm border-primary/40 md:col-span-2">
                     <CardHeader>
                       <CardTitle className="text-primary flex items-center gap-2">
@@ -651,6 +652,28 @@ const AccountPage = () => {
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Pending Tutor Applications */}
+                {user?.role === 'tutor' && user?.tutorStatus === 'pending' && (
+                  <Card className="bg-[#101726]/60 backdrop-blur-sm border-border md:col-span-2">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-foreground">
+                        <GraduationCap className="w-5 h-5 text-primary" />
+                        Share Your Robotics Expertise
+                      </CardTitle>
+                      <CardDescription>
+                        Apply to become a verified robotics tutor on Innovative Hub. Design courses, schedule 1-on-1 tutoring sessions, and earn sharing your knowledge.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <Badge variant="outline" className="text-amber-500 border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-semibold">
+                        Tutor Application Pending Approval
+                      </Badge>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Standard Student / Rejected Tutor Options */}
                 {(!user?.role || user?.role === 'student') && (
                   <Card className="bg-[#101726]/60 backdrop-blur-sm border-border md:col-span-2">
                     <CardHeader>
@@ -663,11 +686,7 @@ const AccountPage = () => {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      {user?.tutorStatus === 'pending' ? (
-                        <Badge variant="outline" className="text-amber-500 border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs font-semibold">
-                          Tutor Application Pending Approval
-                        </Badge>
-                      ) : user?.tutorStatus === 'rejected' ? (
+                      {user?.tutorStatus === 'rejected' ? (
                         <div className="space-y-2">
                           <Badge variant="outline" className="text-destructive border-destructive/40 bg-destructive/10 px-3 py-1 text-xs font-semibold">
                             Application Rejected

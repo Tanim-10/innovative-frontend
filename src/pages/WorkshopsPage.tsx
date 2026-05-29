@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Clock, User, ExternalLink, HelpCircle, AlertCircle, PlusCircle } from 'lucide-react';
+import { Calendar, Clock, User, ExternalLink, HelpCircle, AlertCircle, PlusCircle, Linkedin } from 'lucide-react';
 import SEO from '@/components/SEO';
 
 const WorkshopsPage = () => {
@@ -115,15 +115,9 @@ const WorkshopsPage = () => {
             <div className="max-w-2xl">
               <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3">Robotics Workshops</h1>
               <p className="text-muted-foreground text-sm sm:text-base">
-                Interactive live coding and building sessions. Register to reserve your seat and access virtual room keys. Want to share your knowledge? Submit a request to host a session.
+                Interactive live coding and building sessions. Register to reserve your seat and access virtual room keys.
               </p>
             </div>
-            <Button className="font-semibold gap-2 shrink-0 self-start md:self-center" asChild>
-              <Link to="/workshops/create">
-                <PlusCircle className="w-4 h-4" />
-                Host a Workshop
-              </Link>
-            </Button>
           </div>
 
           {/* Catalog Tab Sections */}
@@ -161,7 +155,16 @@ const WorkshopsPage = () => {
                         key={workshop._id} 
                         className="bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all flex flex-col justify-between overflow-hidden shadow-md"
                       >
-                        <CardHeader className="pb-3">
+                        {workshop.thumbnail ? (
+                          <div className="w-full h-40 overflow-hidden relative">
+                            <img src={workshop.thumbnail} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" alt={workshop.title} />
+                          </div>
+                        ) : (
+                          <div className="w-full h-40 bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center text-muted-foreground relative">
+                            <Calendar className="w-8 h-8 opacity-40 text-primary animate-pulse" />
+                          </div>
+                        )}
+                        <CardHeader className="pb-3 pt-4">
                           <div className="flex justify-between items-start gap-2 mb-2">
                             <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none text-[10px] uppercase font-bold tracking-wider">
                               {workshop.duration}
@@ -190,9 +193,22 @@ const WorkshopsPage = () => {
                               <Clock className="w-3.5 h-3.5 text-primary" />
                               <span>{workshop.time}</span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <User className="w-3.5 h-3.5 text-primary" />
-                              <span>Host: <span className="font-semibold text-foreground">{workshop.hostName}</span></span>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <User className="w-3.5 h-3.5 text-primary" />
+                                <span>Host: <span className="font-semibold text-foreground">{workshop.hostName}</span></span>
+                              </div>
+                              {workshop.hostLinkedIn && (
+                                <a 
+                                  href={workshop.hostLinkedIn} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-primary hover:text-foreground transition-colors p-1"
+                                  title="LinkedIn Profile"
+                                >
+                                  <Linkedin className="w-3.5 h-3.5" />
+                                </a>
+                              )}
                             </div>
                           </div>
                         </CardContent>
@@ -239,7 +255,16 @@ const WorkshopsPage = () => {
                       key={workshop._id} 
                       className="bg-card/50 border-primary/40 flex flex-col justify-between overflow-hidden shadow-md"
                     >
-                      <CardHeader className="pb-3">
+                      {workshop.thumbnail ? (
+                        <div className="w-full h-40 overflow-hidden relative">
+                          <img src={workshop.thumbnail} className="w-full h-full object-cover" alt={workshop.title} />
+                        </div>
+                      ) : (
+                        <div className="w-full h-40 bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center text-muted-foreground relative">
+                          <Calendar className="w-8 h-8 opacity-40 text-primary" />
+                        </div>
+                      )}
+                      <CardHeader className="pb-3 pt-4">
                         <Badge className="bg-emerald-600/10 text-emerald-500 border border-emerald-500/20 text-[10px] uppercase font-bold tracking-wider w-fit mb-2">
                           Ready to Join
                         </Badge>
@@ -260,9 +285,22 @@ const WorkshopsPage = () => {
                             <Clock className="w-3.5 h-3.5 text-primary" />
                             <span>{workshop.time}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <User className="w-3.5 h-3.5 text-primary" />
-                            <span>Host: {workshop.hostName}</span>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2">
+                              <User className="w-3.5 h-3.5 text-primary" />
+                              <span>Host: {workshop.hostName}</span>
+                            </div>
+                            {workshop.hostLinkedIn && (
+                              <a 
+                                href={workshop.hostLinkedIn} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-primary hover:text-foreground transition-colors p-1"
+                                title="LinkedIn Profile"
+                              >
+                                <Linkedin className="w-3.5 h-3.5" />
+                              </a>
+                            )}
                           </div>
                         </div>
                       </CardContent>

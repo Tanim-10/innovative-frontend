@@ -42,7 +42,6 @@ const CourseCatalogPage = lazy(() => import("./pages/CourseCatalogPage"));
 const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));
 const CourseViewerPage = lazy(() => import("./pages/CourseViewerPage"));
 const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage"));
-const CreateWorkshopPage = lazy(() => import("./pages/CreateWorkshopPage"));
 const InternshipsPage = lazy(() => import("./pages/InternshipsPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -97,7 +96,6 @@ const App = () => (
                   <Route path="/tutor-registration" element={<Layout><TutorRegisterPage /></Layout>} />
                   <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
                   <Route path="/workshops" element={<Layout><WorkshopsPage /></Layout>} />
-                  <Route path="/workshops/create" element={<Layout><CreateWorkshopPage /></Layout>} />
                   <Route path="/internships" element={<Layout><InternshipsPage /></Layout>} />
                   <Route path="/project-kits" element={<ComingSoonPage title="Project Kits & Consultation" />} />
                   <Route path="/resources" element={<ComingSoonPage title="Resources & Ideas Hub" />} />

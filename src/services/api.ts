@@ -722,7 +722,7 @@ export const userApi = {
 
 // ============ TUTORS API ============
 export const tutorsApi = {
-  apply: async (data: { bio: string; expertise: string[] }) => {
+  apply: async (data: TutorApplicationData) => {
     return fetchWithAuth<User>('/api/tutors/apply', {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -849,8 +849,10 @@ export interface Workshop {
   title: string;
   description: string;
   hostName: string;
-  hostEmail: string;
-  hostId: string | { _id: string; name: string; profileImage?: string; bio?: string };
+  hostEmail?: string;
+  hostId?: string | { _id: string; name: string; profileImage?: string; bio?: string };
+  hostLinkedIn?: string;
+  thumbnail?: string;
   date: string;
   time: string;
   duration: string;
@@ -868,19 +870,6 @@ export const workshopsApi = {
   },
   getHosted: async () => {
     return fetchWithAuth<Workshop[]>('/api/workshops/hosted');
-  },
-  create: async (data: {
-    title: string;
-    description: string;
-    date: string;
-    time: string;
-    duration: string;
-    meetingLink: string;
-  }) => {
-    return fetchWithAuth<Workshop>('/api/workshops', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
   },
   enroll: async (id: string) => {
     return fetchWithAuth<Workshop>(`/api/workshops/${id}/enroll`, {
@@ -938,6 +927,33 @@ export interface User {
   tutorStatus?: 'pending' | 'approved' | 'rejected';
   bio?: string;
   expertise?: string[];
+  socials?: {
+    linkedin?: string;
+    googleScholar?: string;
+    orcid?: string;
+    medium?: string;
+  };
+  education?: {
+    college?: string;
+    graduationYear?: number;
+    course?: string;
+  };
+}
+
+export interface TutorApplicationData {
+  bio: string;
+  expertise: string[];
+  socials: {
+    linkedin: string;
+    googleScholar?: string;
+    orcid?: string;
+    medium?: string;
+  };
+  education: {
+    college: string;
+    graduationYear: number;
+    course: string;
+  };
 }
 
 export interface Lecture {
