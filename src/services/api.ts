@@ -857,13 +857,19 @@ export interface Workshop {
   time: string;
   duration: string;
   meetingLink: string;
+  googleFormLink: string;
+  showOnHomepage: boolean;
   status: 'pending' | 'approved' | 'rejected';
   enrolledStudents?: string[];
 }
 
 export const workshopsApi = {
-  getAll: async () => {
-    return fetchWithAuth<Workshop[]>('/api/workshops');
+  getAll: async (params?: { homepage?: boolean }) => {
+    const qs = params?.homepage ? '?homepage=true' : '';
+    return fetchWithAuth<Workshop[]>(`/api/workshops${qs}`);
+  },
+  getById: async (id: string) => {
+    return fetchWithAuth<Workshop>(`/api/workshops/${id}`);
   },
   getEnrolled: async () => {
     return fetchWithAuth<Workshop[]>('/api/workshops/enrolled');
@@ -910,6 +916,22 @@ export const internshipsApi = {
   },
   getMyApplications: async () => {
     return fetchWithAuth<InternshipApplication[]>('/api/internships/my-applications');
+  },
+};
+
+// ============ GALLERY API ============
+export interface GalleryItem {
+  _id: string;
+  title: string;
+  category: 'workshops' | 'projects' | 'lab' | 'events';
+  image: string;
+  description: string;
+  createdAt?: string;
+}
+
+export const galleryApi = {
+  getAll: async () => {
+    return fetchWithAuth<GalleryItem[]>('/api/gallery');
   },
 };
 

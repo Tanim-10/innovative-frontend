@@ -1,66 +1,46 @@
 import { Link } from 'react-router-dom';
-import { Facebook, Youtube, Instagram } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, ExternalLink } from 'lucide-react';
 
 const Footer = () => {
   const quickLinks = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/eshop' },
-    { name: 'Shop all products', path: '/eshop/products' },
-    { name: 'About Us', path: '/about' },
-    { name: 'Contact', path: '/contact' },
-    { name: 'FAQ', path: '/faq' },
+    { name: 'Workshops', path: '/workshops' },
+    { name: 'Internships', path: '/internships' },
+    { name: 'Courses', path: '/robotics-courses' },
   ];
 
-  const customerService = [
-    { name: 'My Account', path: '/account' },
-    { name: 'Order Tracking', path: '/order-tracking' },
-    { name: 'Wishlist', path: '/wishlist' },
+  const companyLinks = [
+    { name: 'About Us', path: '/about' },
+    { name: 'Contact Us', path: '/contact' },
+    { name: 'FAQ', path: '/faq' },
+    { name: 'Gallery', path: '/gallery' },
+  ];
+
+  const legalLinks = [
+    { name: 'Privacy Policy', path: '/privacy-policy' },
+    { name: 'Terms & Conditions', path: '/terms-conditions' },
   ];
 
   const socialLinks = [
-    { icon: Facebook, url: 'https://www.facebook.com/people/Innovative-hub/61566aborrar848671/', label: 'Facebook' },
-    { icon: Youtube, url: 'https://www.youtube.com/@inovative_hub', label: 'YouTube' },
-    { icon: Instagram, url: 'https://www.instagram.com/innovative_hubofficial/', label: 'Instagram' },
+    { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/innovative_hubofficial/' },
+    { name: 'Facebook', icon: Facebook, url: 'https://www.facebook.com/people/Innovative-hub/61566aborrar848671/' },
+    { name: 'LinkedIn', icon: Linkedin, url: 'https://linkedin.com/company/innovative-hub' },
   ];
 
   return (
-    <footer className="bg-footer border-t border-border">
-      <div className="container mx-auto px-4 py-8 sm:py-10 md:py-12 lg:py-16 max-w-full">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 lg:gap-12">
-          {/* Brand */}
-          <div className="space-y-4">
-            <h3 className="text-xl font-bold text-footer-text">
-              Innovative Hub
-            </h3>
-            <p className="text-sm text-footer-muted leading-relaxed">
-              Your gateway to top-quality electronics, robotics courses, and DIY learning at unbeatable prices.
-            </p>
-            {/* Social Icons */}
-            <div className="flex items-center gap-4 pt-2">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-footer-muted hover:text-white transition-colors"
-                  aria-label={social.label}
-                >
-                  <social.icon className="w-5 h-5" />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Links */}
+    <footer className="bg-footer border-t border-border/40 text-footer-text">
+      <div className="container mx-auto px-4 py-8 md:py-10 max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6">
+          {/* Column 1: Quick Links */}
           <div>
-            <h4 className="text-base font-semibold text-footer-text mb-4">Quick Links</h4>
-            <ul className="space-y-3">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">Quick Links</h4>
+            <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-sm text-footer-muted hover:text-white transition-colors py-2 block touch-manipulation min-h-[44px] flex items-center"
+                    className="text-sm text-footer-muted hover:text-white hover:translate-x-1 transition-all duration-200 inline-block py-1 touch-manipulation"
                   >
                     {link.name}
                   </Link>
@@ -69,15 +49,15 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Column 2: Company */}
           <div>
-            <h4 className="text-base font-semibold text-footer-text mb-4">Customer Service</h4>
-            <ul className="space-y-3">
-              {customerService.map((link) => (
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">Company</h4>
+            <ul className="space-y-2">
+              {companyLinks.map((link) => (
                 <li key={link.path}>
                   <Link
                     to={link.path}
-                    className="text-sm text-footer-muted hover:text-white transition-colors py-2 block touch-manipulation min-h-[44px] flex items-center"
+                    className="text-sm text-footer-muted hover:text-white hover:translate-x-1 transition-all duration-200 inline-block py-1 touch-manipulation"
                   >
                     {link.name}
                   </Link>
@@ -86,19 +66,52 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* About Column */}
+          {/* Column 3: Legal */}
           <div>
-            <h4 className="text-base font-semibold text-footer-text mb-4">About Innovative Hub</h4>
-            <p className="text-sm text-footer-muted leading-relaxed">
-              Innovative Hub is your one-stop destination for electronics, robotics, and DIY innovation. We provide high-quality components, kits, and expert tutorials to guide you from idea to execution. Our mission is to empower makers, students, and professionals to Learn, Build, Share, and Innovate.
-            </p>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">Legal</h4>
+            <ul className="space-y-2">
+              {legalLinks.map((link) => (
+                <li key={link.path}>
+                  <Link
+                    to={link.path}
+                    className="text-sm text-footer-muted hover:text-white hover:translate-x-1 transition-all duration-200 inline-block py-1 touch-manipulation"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Links / Social */}
+          <div>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">Links</h4>
+            <ul className="space-y-2.5">
+              {socialLinks.map((social) => (
+                <li key={social.name}>
+                  <a
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-footer-muted hover:text-white transition-colors py-1 group touch-manipulation"
+                  >
+                    <social.icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform duration-200" />
+                    <span>{social.name}</span>
+                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-white/10">
-          <p className="text-center text-xs sm:text-sm text-footer-muted px-2">
-            © 2025 Innovative Hub. All rights reserved.
+        <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-footer-muted text-center sm:text-left">
+            © {new Date().getFullYear()} Innovative Hub. All rights reserved.
+          </p>
+          <p className="text-xs text-footer-muted/60 text-center sm:text-right">
+            Providing tools, knowledge, and community to transform ideas into reality.
           </p>
         </div>
       </div>

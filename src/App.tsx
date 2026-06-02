@@ -12,6 +12,7 @@ import { AuthProvider } from "./context/AuthContext";
 
 // Frontend Components (Layout + above-the-fold kept eager for fast FCP)
 import Layout from "./components/Layout";
+import AcademyLayout from "./components/AcademyLayout";
 import ScrollToTop from "./components/ScrollToTop";
 import HomePage from "./pages/HomePage";
 import EShopHomePage from "./pages/EShopHomePage";
@@ -42,7 +43,11 @@ const CourseCatalogPage = lazy(() => import("./pages/CourseCatalogPage"));
 const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));
 const CourseViewerPage = lazy(() => import("./pages/CourseViewerPage"));
 const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage"));
+const WorkshopDetailPage = lazy(() => import("./pages/WorkshopDetailPage"));
 const InternshipsPage = lazy(() => import("./pages/InternshipsPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
+const GalleryPage = lazy(() => import("./pages/GalleryPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageFallback() {
@@ -88,15 +93,19 @@ const App = () => (
                   <Route path="/order/:orderId" element={<OrderDetailPage />} />
                   <Route path="/order-tracking" element={<OrderTrackingPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/robotics-courses" element={<Layout><CourseCatalogPage /></Layout>} />
-                  <Route path="/course/:id" element={<Layout><CourseDetailPage /></Layout>} />
+                  <Route path="/robotics-courses" element={<AcademyLayout><CourseCatalogPage /></AcademyLayout>} />
+                  <Route path="/course/:id" element={<AcademyLayout><CourseDetailPage /></AcademyLayout>} />
                   <Route path="/classroom/:id" element={<CourseViewerPage />} />
-                  <Route path="/tutor-directory" element={<Layout><TutorDirectoryPage /></Layout>} />
-                  <Route path="/tutor/:id" element={<Layout><TutorProfilePage /></Layout>} />
-                  <Route path="/tutor-registration" element={<Layout><TutorRegisterPage /></Layout>} />
+                  <Route path="/tutor-directory" element={<AcademyLayout><TutorDirectoryPage /></AcademyLayout>} />
+                  <Route path="/tutor/:id" element={<AcademyLayout><TutorProfilePage /></AcademyLayout>} />
+                  <Route path="/tutor-registration" element={<AcademyLayout><TutorRegisterPage /></AcademyLayout>} />
                   <Route path="/tutor-dashboard" element={<TutorDashboardPage />} />
                   <Route path="/workshops" element={<Layout><WorkshopsPage /></Layout>} />
+                  <Route path="/workshop/:id" element={<Layout><WorkshopDetailPage /></Layout>} />
                   <Route path="/internships" element={<Layout><InternshipsPage /></Layout>} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+                  <Route path="/terms-conditions" element={<TermsConditionsPage />} />
+                  <Route path="/gallery" element={<GalleryPage />} />
                   <Route path="/project-kits" element={<ComingSoonPage title="Project Kits & Consultation" />} />
                   <Route path="/resources" element={<ComingSoonPage title="Resources & Ideas Hub" />} />
                   <Route path="*" element={<NotFound />} />

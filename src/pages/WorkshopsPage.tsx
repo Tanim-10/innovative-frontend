@@ -73,6 +73,13 @@ const WorkshopsPage = () => {
           title: 'Successfully Enrolled!',
           description: 'You are registered for this workshop. The meeting details are unlocked.',
         });
+        
+        // Open Google Form link if available
+        const workshop = workshops.find((w) => w._id === workshopId);
+        if (workshop && workshop.googleFormLink) {
+          window.open(workshop.googleFormLink, '_blank');
+        }
+
         // Refresh catalogs
         await Promise.all([fetchWorkshops(), fetchEnrolledWorkshops()]);
       }
@@ -153,70 +160,73 @@ const WorkshopsPage = () => {
                     return (
                       <Card 
                         key={workshop._id} 
-                        className="bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all flex flex-col justify-between overflow-hidden shadow-md"
+                        className="bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all flex flex-col justify-between overflow-hidden shadow-md group text-left"
                       >
-                        {workshop.thumbnail ? (
-                          <div className="w-full h-40 overflow-hidden relative">
-                            <img src={workshop.thumbnail} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" alt={workshop.title} />
-                          </div>
-                        ) : (
-                          <div className="w-full h-40 bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center text-muted-foreground relative">
-                            <Calendar className="w-8 h-8 opacity-40 text-primary animate-pulse" />
-                          </div>
-                        )}
-                        <CardHeader className="pb-3 pt-4">
-                          <div className="flex justify-between items-start gap-2 mb-2">
-                            <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none text-[10px] uppercase font-bold tracking-wider">
-                              {workshop.duration}
-                            </Badge>
-                            {enrolled && (
-                              <Badge className="bg-emerald-600 text-white border-none text-[10px] uppercase font-bold tracking-wider">
-                                Enrolled
+                        <Link to={`/workshop/${workshop._id}`} className="flex-1 flex flex-col justify-between">
+                          {workshop.thumbnail ? (
+                            <div className="w-full h-40 overflow-hidden relative">
+                              <img src={workshop.thumbnail} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt={workshop.title} />
+                            </div>
+                          ) : (
+                            <div className="w-full h-40 bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center text-muted-foreground relative">
+                              <Calendar className="w-8 h-8 opacity-40 text-primary animate-pulse" />
+                            </div>
+                          )}
+                          <CardHeader className="pb-3 pt-4">
+                            <div className="flex justify-between items-start gap-2 mb-2">
+                              <Badge className="bg-primary/20 text-primary hover:bg-primary/20 border-none text-[10px] uppercase font-bold tracking-wider">
+                                {workshop.duration}
                               </Badge>
-                            )}
-                          </div>
-                          <CardTitle className="text-base font-bold line-clamp-2 min-h-[3rem]">
-                            {workshop.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4 flex-1">
-                          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-                            {workshop.description}
-                          </p>
-                          
-                          <div className="space-y-2 text-xs text-muted-foreground border-t border-border/40 pt-3">
-                            <div className="flex items-center gap-2">
-                              <Calendar className="w-3.5 h-3.5 text-primary" />
-                              <span>{formatDate(workshop.date)}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Clock className="w-3.5 h-3.5 text-primary" />
-                              <span>{workshop.time}</span>
-                            </div>
-                            <div className="flex items-center justify-between gap-2">
-                              <div className="flex items-center gap-2">
-                                <User className="w-3.5 h-3.5 text-primary" />
-                                <span>Host: <span className="font-semibold text-foreground">{workshop.hostName}</span></span>
-                              </div>
-                              {workshop.hostLinkedIn && (
-                                <a 
-                                  href={workshop.hostLinkedIn} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer" 
-                                  className="text-primary hover:text-foreground transition-colors p-1"
-                                  title="LinkedIn Profile"
-                                >
-                                  <Linkedin className="w-3.5 h-3.5" />
-                                </a>
+                              {enrolled && (
+                                <Badge className="bg-emerald-600 text-white border-none text-[10px] uppercase font-bold tracking-wider">
+                                  Enrolled
+                                </Badge>
                               )}
                             </div>
-                          </div>
-                        </CardContent>
+                            <CardTitle className="text-base font-bold line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
+                              {workshop.title}
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="space-y-4 flex-1">
+                            <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                              {workshop.description}
+                            </p>
+                            
+                            <div className="space-y-2 text-xs text-muted-foreground border-t border-border/40 pt-3">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-3.5 h-3.5 text-primary" />
+                                <span>{formatDate(workshop.date)}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Clock className="w-3.5 h-3.5 text-primary" />
+                                <span>{workshop.time}</span>
+                              </div>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-2">
+                                  <User className="w-3.5 h-3.5 text-primary" />
+                                  <span>Host: <span className="font-semibold text-foreground">{workshop.hostName}</span></span>
+                                </div>
+                                {workshop.hostLinkedIn && (
+                                  <a 
+                                    href={workshop.hostLinkedIn} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="text-primary hover:text-foreground transition-colors p-1"
+                                    title="LinkedIn Profile"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <Linkedin className="w-3.5 h-3.5" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Link>
                         
                         <CardFooter className="pt-3 pb-5 border-t border-border/40 bg-muted/5 flex flex-col gap-2">
                           {enrolled ? (
                             <Button className="w-full gap-1.5 font-bold" asChild>
-                              <a href={workshop.meetingLink} target="_blank" rel="noopener noreferrer">
+                              <a href={workshop.googleFormLink || workshop.meetingLink} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="w-4 h-4" />
                                 Join Virtual Room
                               </a>
@@ -253,60 +263,63 @@ const WorkshopsPage = () => {
                   {enrolledWorkshops.map((workshop) => (
                     <Card 
                       key={workshop._id} 
-                      className="bg-card/50 border-primary/40 flex flex-col justify-between overflow-hidden shadow-md"
+                      className="bg-card/50 border-primary/40 flex flex-col justify-between overflow-hidden shadow-md group text-left"
                     >
-                      {workshop.thumbnail ? (
-                        <div className="w-full h-40 overflow-hidden relative">
-                          <img src={workshop.thumbnail} className="w-full h-full object-cover" alt={workshop.title} />
-                        </div>
-                      ) : (
-                        <div className="w-full h-40 bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center text-muted-foreground relative">
-                          <Calendar className="w-8 h-8 opacity-40 text-primary" />
-                        </div>
-                      )}
-                      <CardHeader className="pb-3 pt-4">
-                        <Badge className="bg-emerald-600/10 text-emerald-500 border border-emerald-500/20 text-[10px] uppercase font-bold tracking-wider w-fit mb-2">
-                          Ready to Join
-                        </Badge>
-                        <CardTitle className="text-base font-bold line-clamp-2 min-h-[3rem]">
-                          {workshop.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4 flex-1">
-                        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
-                          {workshop.description}
-                        </p>
-                        <div className="space-y-2 text-xs text-muted-foreground border-t border-border/40 pt-3">
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-3.5 h-3.5 text-primary" />
-                            <span>{formatDate(workshop.date)}</span>
+                      <Link to={`/workshop/${workshop._id}`} className="flex-1 flex flex-col justify-between">
+                        {workshop.thumbnail ? (
+                          <div className="w-full h-40 overflow-hidden relative">
+                            <img src={workshop.thumbnail} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" alt={workshop.title} />
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-3.5 h-3.5 text-primary" />
-                            <span>{workshop.time}</span>
+                        ) : (
+                          <div className="w-full h-40 bg-gradient-to-br from-[#1e293b] to-[#0f172a] flex items-center justify-center text-muted-foreground relative">
+                            <Calendar className="w-8 h-8 opacity-40 text-primary" />
                           </div>
-                          <div className="flex items-center justify-between gap-2">
+                        )}
+                        <CardHeader className="pb-3 pt-4">
+                          <Badge className="bg-emerald-600/10 text-emerald-500 border border-emerald-500/20 text-[10px] uppercase font-bold tracking-wider w-fit mb-2">
+                            Ready to Join
+                          </Badge>
+                          <CardTitle className="text-base font-bold line-clamp-2 min-h-[3rem] group-hover:text-primary transition-colors">
+                            {workshop.title}
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4 flex-1">
+                          <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
+                            {workshop.description}
+                          </p>
+                          <div className="space-y-2 text-xs text-muted-foreground border-t border-border/40 pt-3">
                             <div className="flex items-center gap-2">
-                              <User className="w-3.5 h-3.5 text-primary" />
-                              <span>Host: {workshop.hostName}</span>
+                              <Calendar className="w-3.5 h-3.5 text-primary" />
+                              <span>{formatDate(workshop.date)}</span>
                             </div>
-                            {workshop.hostLinkedIn && (
-                              <a 
-                                href={workshop.hostLinkedIn} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="text-primary hover:text-foreground transition-colors p-1"
-                                title="LinkedIn Profile"
-                              >
-                                <Linkedin className="w-3.5 h-3.5" />
-                              </a>
-                            )}
+                            <div className="flex items-center gap-2">
+                              <Clock className="w-3.5 h-3.5 text-primary" />
+                              <span>{workshop.time}</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex items-center gap-2">
+                                <User className="w-3.5 h-3.5 text-primary" />
+                                <span>Host: {workshop.hostName}</span>
+                              </div>
+                              {workshop.hostLinkedIn && (
+                                <a 
+                                  href={workshop.hostLinkedIn} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer" 
+                                  className="text-primary hover:text-foreground transition-colors p-1"
+                                  title="LinkedIn Profile"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Linkedin className="w-3.5 h-3.5" />
+                                </a>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </CardContent>
+                        </CardContent>
+                      </Link>
                       <CardFooter className="pt-3 pb-5 border-t border-border/40 bg-emerald-600/5">
                         <Button className="w-full gap-1.5 font-bold" asChild>
-                          <a href={workshop.meetingLink} target="_blank" rel="noopener noreferrer">
+                          <a href={workshop.googleFormLink || workshop.meetingLink} target="_blank" rel="noopener noreferrer">
                             <ExternalLink className="w-4 h-4" />
                             Join Virtual Room
                           </a>
