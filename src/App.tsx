@@ -48,6 +48,8 @@ const InternshipsPage = lazy(() => import("./pages/InternshipsPage"));
 const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
 const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
+const ProjectsConsultancyPage = lazy(() => import("./pages/ProjectsConsultancyPage"));
+const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageFallback() {
@@ -106,7 +108,8 @@ const App = () => (
                   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                   <Route path="/terms-conditions" element={<TermsConditionsPage />} />
                   <Route path="/gallery" element={<GalleryPage />} />
-                  <Route path="/project-kits" element={<ComingSoonPage title="Project Kits & Consultation" />} />
+                  <Route path="/project-kits" element={<Layout><ProjectsConsultancyPage /></Layout>} />
+                  <Route path="/project/:id" element={<Layout><ProjectDetailPage /></Layout>} />
                   <Route path="/resources" element={<ComingSoonPage title="Resources & Ideas Hub" />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

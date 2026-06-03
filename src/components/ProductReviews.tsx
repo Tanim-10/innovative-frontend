@@ -402,12 +402,12 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                       <div className="flex items-center gap-2 min-w-0">
                         {(() => {
                           const profile =
-                            typeof review.userId === 'object'
+                            review.userId && typeof review.userId === 'object'
                               ? (review.userId as { profileImage?: string }).profileImage
                               : review.userProfileImage;
                           const name =
                             review.userName ||
-                            (typeof review.userId === 'object' ? (review.userId as { name?: string }).name : '');
+                            (review.userId && typeof review.userId === 'object' ? (review.userId as { name?: string }).name : '');
                           const initial = (name || 'U').charAt(0).toUpperCase();
                           return profile ? (
                             <img

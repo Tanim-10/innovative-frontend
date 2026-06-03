@@ -196,6 +196,20 @@ const toFrontendProduct = (p: Record<string, unknown>): Product => {
   };
 };
 
+// Transform backend project to frontend Project shape
+const toFrontendProject = (p: Record<string, unknown>): Project => {
+  const prod = toFrontendProduct(p);
+  return {
+    ...prod,
+    isProject: Boolean(p.isProject ?? true),
+    projectType: (p.projectType as 'combo_components' | 'ready_made') || 'combo_components',
+    components: Array.isArray(p.components) ? (p.components as string[]) : [],
+    difficulty: (p.difficulty as 'beginner' | 'intermediate' | 'advanced') || 'beginner',
+    estimatedBuildTime: (p.estimatedBuildTime as string) || '',
+    documentation: (p.documentation as string) || '',
+  };
+};
+
 // ============ PRODUCTS API ============
 const PAGE_SIZE = 20;
 
@@ -843,6 +857,66 @@ export const sessionsApi = {
   },
 };
 
+// ============ PROJECTS API ============
+export const projectsApi = {
+  getAll: async (params?: {
+    search?: string;
+    projectType?: string;
+    difficulty?: string;
+    components?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    sort?: string;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.search) q.set('search', params.search);
+    if (params?.projectType) q.set('projectType', params.projectType);
+    if (params?.difficulty) q.set('difficulty', params.difficulty);
+    if (params?.components) q.set('components', params.components);
+    if (params?.minPrice !== undefined) q.set('minPrice', String(params.minPrice));
+    if (params?.maxPrice !== undefined) q.set('maxPrice', String(params.maxPrice));
+    if (params?.sort) q.set('sort', params.sort);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    const res = await fetchWithAuth<unknown>(`/api/projects${qs}`);
+    const data = (res as ApiResponse<unknown>).data ?? res;
+    const arr = Array.isArray(data) ? data : [];
+    const list = arr.map((p) => toFrontendProject(p as Record<string, unknown>));
+    return { success: true, data: list, message: '' } as ApiResponse<Project[]>;
+  },
+
+  getComponents: async () => {
+    return fetchWithAuth<string[]>('/api/projects/components');
+  },
+
+  getById: async (id: string) => {
+    const res = await fetchWithAuth<unknown>(`/api/projects/${id}`);
+    const raw = (res as ApiResponse<unknown>).data ?? res;
+    if (raw) {
+      return { success: true, data: toFrontendProject(raw as Record<string, unknown>), message: '' } as ApiResponse<Project>;
+    }
+    return { success: false, data: undefined as unknown as Project, message: 'Project not found' };
+  }
+};
+
+// ============ MENTORSHIPS API ============
+export const mentorshipsApi = {
+  requestSession: async (data: {
+    topic: string;
+    description: string;
+    preferredDate: string;
+    preferredTime: string;
+  }) => {
+    return fetchWithAuth<MentorshipRequest>('/api/mentorships', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+  },
+
+  getMyRequests: async () => {
+    return fetchWithAuth<MentorshipRequest[]>('/api/mentorships/my-requests');
+  }
+};
+
 // ============ WORKSHOPS API ============
 export interface Workshop {
   _id: string;
@@ -1080,3 +1154,27 @@ export interface Order {
   invoiceNumber?: string;
   createdAt: string;
 }
+
+export interface Project extends Omit<Product, 'category' | 'subcategory'> {
+  isProject?: boolean;
+  projectType: 'combo_components' | 'ready_made';
+  components: string[];
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  estimatedBuildTime: string;
+  documentation: string;
+}
+
+export interface MentorshipRequest {
+  _id: string;
+  userId: string | { _id: string; name: string; email: string; mobile?: string };
+  topic: string;
+  description: string;
+  preferredDate: string;
+  preferredTime: string;
+  status: 'pending' | 'approved' | 'rejected' | 'completed';
+  tutorId?: string | { _id: string; name: string; email: string; profileImage?: string; bio?: string; expertise?: string[] };
+  meetingLink?: string;
+  adminNotes?: string;
+  createdAt: string;
+}
+
