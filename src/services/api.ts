@@ -10,7 +10,7 @@ interface ApiResponse<T = unknown> {
 
 // Helper to get auth token
 const getAuthToken = (): string | null => {
-  return localStorage.getItem('authToken');
+  return localStorage.getItem('authToken') || localStorage.getItem('adminToken');
 };
 
 // Helper to set auth token
@@ -692,8 +692,25 @@ export const paymentsApi = {
 
 // ============ USER API ============
 export const userApi = {
-  updateProfile: async (data: { name?: string; mobile?: string }) => {
-    return fetchWithAuth('/api/user', {
+  updateProfile: async (data: {
+    name?: string;
+    mobile?: string;
+    bio?: string;
+    expertise?: string[];
+    socials?: {
+      linkedin?: string;
+      googleScholar?: string;
+      orcid?: string;
+      medium?: string;
+    };
+    education?: {
+      college?: string;
+      graduationYear?: number;
+      course?: string;
+    };
+    profileImage?: string;
+  }) => {
+    return fetchWithAuth<User>('/api/user', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -1009,12 +1026,197 @@ export const galleryApi = {
   },
 };
 
+// ============ PUBLIC PROFILE API ============
+export const publicProfileApi = {
+  getProfile: async (userId: string) => {
+    return fetchWithAuth<User>(`/api/user/profile/${userId}`);
+  }
+};
+
+// ============ IDEAS & RESOURCES API ============
+export interface IdeaFile {
+  name: string;
+  url: string;
+  publicId?: string;
+}
+
+export interface Idea {
+  _id: string;
+  userId?: string | { _id: string; name: string; profileImage?: string; bio?: string; role?: string };
+  adminId?: string | { _id: string; email: string; role?: string };
+  type: 'community' | 'structured';
+  title?: string;
+  category: string;
+  description: string;
+  problemStatement?: string;
+  solution?: string;
+  techStack?: string[];
+  links?: string[];
+  photos: string[];
+  files: IdeaFile[];
+  upvotes: string[];
+  downvotes: string[];
+  commentsCount: number;
+  isHidden: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IdeaComment {
+  _id: string;
+  ideaId: string;
+  userId?: string | { _id: string; name: string; profileImage?: string; bio?: string; role?: string };
+  adminId?: string | { _id: string; email: string; role?: string };
+  comment: string;
+  isHidden: boolean;
+  isDeleted: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const ideasApi = {
+  getAll: async (params?: {
+    type?: 'community' | 'structured';
+    category?: string;
+    search?: string;
+    userId?: string;
+    skip?: number;
+    limit?: number;
+    sort?: 'latest' | 'upvotes';
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.type) q.set('type', params.type);
+    if (params?.category) q.set('category', params.category);
+    if (params?.search) q.set('search', params.search);
+    if (params?.userId) q.set('userId', params.userId);
+    if (params?.skip != null) q.set('skip', String(params.skip));
+    if (params?.limit != null) q.set('limit', String(params.limit));
+    if (params?.sort) q.set('sort', params.sort);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+    return fetchWithAuth<Idea[]>(`/api/ideas${qs}`);
+  },
+
+  getById: async (id: string) => {
+    return fetchWithAuth<Idea>(`/api/ideas/${id}`);
+  },
+
+  uploadFile: async (file: File) => {
+    const token = getAuthToken();
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_URL}/api/ideas/upload`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Network error' }));
+      throw new Error(err.message || 'File upload failed');
+    }
+    return res.json() as Promise<ApiResponse<{ url: string; publicId: string }>>;
+  },
+
+  create: async (formData: FormData) => {
+    const token = getAuthToken();
+    const res = await fetch(`${API_URL}/api/ideas`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Network error' }));
+      throw new Error(err.message || 'Failed to submit idea');
+    }
+    return res.json() as Promise<ApiResponse<Idea>>;
+  },
+
+  update: async (id: string, data: Partial<Idea>) => {
+    return fetchWithAuth<Idea>(`/api/ideas/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
+
+  delete: async (id: string) => {
+    return fetchWithAuth<{ message: string }>(`/api/ideas/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  vote: async (id: string, voteType: 'up' | 'down') => {
+    return fetchWithAuth<{
+      upvotes: string[];
+      downvotes: string[];
+      upvotesCount: number;
+      downvotesCount: number;
+    }>(`/api/ideas/${id}/vote`, {
+      method: 'POST',
+      body: JSON.stringify({ voteType }),
+    });
+  },
+
+  getComments: async (ideaId: string) => {
+    return fetchWithAuth<IdeaComment[]>(`/api/ideas/${ideaId}/comments`);
+  },
+
+  addComment: async (ideaId: string, comment: string) => {
+    return fetchWithAuth<IdeaComment>(`/api/ideas/${ideaId}/comments`, {
+      method: 'POST',
+      body: JSON.stringify({ comment }),
+    });
+  },
+
+  deleteComment: async (commentId: string) => {
+    return fetchWithAuth<{ message: string }>(`/api/ideas/comments/${commentId}`, {
+      method: 'DELETE',
+    });
+  },
+
+  toggleHideIdea: async (id: string) => {
+    const token = getAuthToken();
+    const res = await fetch(`${API_URL}/api/ideas/${id}/hide`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Network error' }));
+      throw new Error(err.message || 'Failed to toggle visibility');
+    }
+    return res.json() as Promise<ApiResponse<{ isHidden: boolean }>>;
+  },
+
+  toggleHideComment: async (commentId: string) => {
+    const token = getAuthToken();
+    const res = await fetch(`${API_URL}/api/ideas/comments/${commentId}/hide`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token && { Authorization: `Bearer ${token}` }),
+      }
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Network error' }));
+      throw new Error(err.message || 'Failed to toggle visibility');
+    }
+    return res.json() as Promise<ApiResponse<{ isHidden: boolean }>>;
+  }
+};
+
 // ============ TYPES ============
 export interface User {
   _id: string;
   name: string;
   email: string;
   mobile?: string;
+  profileImage?: string;
   /** Server may omit; false means number not OTP-verified for this account */
   mobileVerified?: boolean;
   addresses: Address[];

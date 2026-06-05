@@ -31,8 +31,8 @@ const offerings = [
     icon: MessageCircle,
     title: 'Resource and Ideas Hub',
     description: 'A knowledge-sharing hub filled with innovative ideas, project inspirations, research insights, and community discussions to spark creativity.',
-    path: 'https://idea-hub-frontend-mu.vercel.app/',
-    isExternal: true,
+    path: '/resources',
+    isExternal: false,
     hoverColor: 'hover:border-primary',
   },
 ];
