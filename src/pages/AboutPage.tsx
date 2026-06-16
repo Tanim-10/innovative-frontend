@@ -215,7 +215,7 @@ const AboutPage = () => {
                         Gopal Krushna Mahapatra is the Co-Founder and Director of JG Innovative Hub Pvt. Ltd. He brings expertise in Artificial Intelligence (AI), Internet of Things (IoT), Embedded Systems, Automation, Product Engineering, and Technology Operations. His commitment to innovation and execution plays a vital role in transforming ideas into scalable and market-ready solutions.
                       </p>
                       <p>
-                        As the COO, he oversees organizational operations, project execution, technology implementation, team development, and strategic growth. He believes that great innovation happens when ideas meet execution to build a technology-driven future.
+                        As the COO, he oversees organizational operations, project execution, technology implementation, team development, and strategic growth. He believes that great innovation happens when ideas meet execution to build a technology-driven future. 
                       </p>
                     </div>
                     <div className="flex flex-wrap gap-2 pt-2 justify-center md:justify-start">
