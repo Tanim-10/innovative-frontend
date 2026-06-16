@@ -749,6 +749,24 @@ export const userApi = {
       method: 'PUT',
     });
   },
+
+  uploadAvatar: async (file: File) => {
+    const token = getAuthToken();
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const res = await fetch(`${API_URL}/api/user/upload-avatar`, {
+      method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ message: 'Network error' }));
+      throw new Error(err.message || 'Avatar upload failed');
+    }
+    return res.json() as Promise<ApiResponse<{ url: string }>>;
+  },
 };
 
 // ============ TUTORS API ============
@@ -771,67 +789,7 @@ export const tutorsApi = {
   },
 };
 
-// ============ COURSES API ============
-export const coursesApi = {
-  getAll: async (params?: { search?: string; difficulty?: string; topic?: string }) => {
-    const q = new URLSearchParams();
-    if (params?.search) q.set('search', params.search);
-    if (params?.difficulty) q.set('difficulty', params.difficulty);
-    if (params?.topic) q.set('topic', params.topic);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return fetchWithAuth<Course[]>(`/api/courses${qs}`);
-  },
-  getTutorCourses: async () => {
-    return fetchWithAuth<Course[]>('/api/courses/tutor');
-  },
-  getEnrolledCourses: async () => {
-    return fetchWithAuth<Course[]>('/api/courses/enrolled');
-  },
-  getById: async (id: string) => {
-    return fetchWithAuth<Course & { isEnrolled?: boolean }>(`/api/courses/${id}`);
-  },
-  create: async (data: Partial<Course>) => {
-    return fetchWithAuth<Course>('/api/courses', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  },
-  update: async (id: string, data: Partial<Course>) => {
-    return fetchWithAuth<Course>(`/api/courses/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  },
-  deleteCourse: async (id: string) => {
-    return fetchWithAuth<{ message: string }>(`/api/courses/${id}`, {
-      method: 'DELETE',
-    });
-  },
-  getCourseViewer: async (id: string) => {
-    return fetchWithAuth<Course>(`/api/courses/${id}/viewer`);
-  },
-  purchase: async (id: string) => {
-    return fetchWithAuth<{
-      enrolled: boolean;
-      data: {
-        orderId?: string;
-        amount?: number;
-        currency?: string;
-        keyId?: string;
-        coursePrice?: number;
-        _id?: string;
-      };
-    }>(`/api/courses/${id}/purchase`, {
-      method: 'POST',
-    });
-  },
-  verifyPurchase: async (id: string, data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
-    return fetchWithAuth<unknown>(`/api/courses/${id}/verify-purchase`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  },
-};
+
 
 // ============ SESSIONS API ============
 export const sessionsApi = {
@@ -915,24 +873,7 @@ export const projectsApi = {
   }
 };
 
-// ============ MENTORSHIPS API ============
-export const mentorshipsApi = {
-  requestSession: async (data: {
-    topic: string;
-    description: string;
-    preferredDate: string;
-    preferredTime: string;
-  }) => {
-    return fetchWithAuth<MentorshipRequest>('/api/mentorships', {
-      method: 'POST',
-      body: JSON.stringify(data)
-    });
-  },
 
-  getMyRequests: async () => {
-    return fetchWithAuth<MentorshipRequest[]>('/api/mentorships/my-requests');
-  }
-};
 
 // ============ WORKSHOPS API ============
 export interface Workshop {
@@ -1033,182 +974,7 @@ export const publicProfileApi = {
   }
 };
 
-// ============ IDEAS & RESOURCES API ============
-export interface IdeaFile {
-  name: string;
-  url: string;
-  publicId?: string;
-}
 
-export interface Idea {
-  _id: string;
-  userId?: string | { _id: string; name: string; profileImage?: string; bio?: string; role?: string };
-  adminId?: string | { _id: string; email: string; role?: string };
-  type: 'community' | 'structured';
-  title?: string;
-  category: string;
-  description: string;
-  problemStatement?: string;
-  solution?: string;
-  techStack?: string[];
-  links?: string[];
-  photos: string[];
-  files: IdeaFile[];
-  upvotes: string[];
-  downvotes: string[];
-  commentsCount: number;
-  isHidden: boolean;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface IdeaComment {
-  _id: string;
-  ideaId: string;
-  userId?: string | { _id: string; name: string; profileImage?: string; bio?: string; role?: string };
-  adminId?: string | { _id: string; email: string; role?: string };
-  comment: string;
-  isHidden: boolean;
-  isDeleted: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export const ideasApi = {
-  getAll: async (params?: {
-    type?: 'community' | 'structured';
-    category?: string;
-    search?: string;
-    userId?: string;
-    skip?: number;
-    limit?: number;
-    sort?: 'latest' | 'upvotes';
-  }) => {
-    const q = new URLSearchParams();
-    if (params?.type) q.set('type', params.type);
-    if (params?.category) q.set('category', params.category);
-    if (params?.search) q.set('search', params.search);
-    if (params?.userId) q.set('userId', params.userId);
-    if (params?.skip != null) q.set('skip', String(params.skip));
-    if (params?.limit != null) q.set('limit', String(params.limit));
-    if (params?.sort) q.set('sort', params.sort);
-    const qs = q.toString() ? `?${q.toString()}` : '';
-    return fetchWithAuth<Idea[]>(`/api/ideas${qs}`);
-  },
-
-  getById: async (id: string) => {
-    return fetchWithAuth<Idea>(`/api/ideas/${id}`);
-  },
-
-  uploadFile: async (file: File) => {
-    const token = getAuthToken();
-    const formData = new FormData();
-    formData.append('file', file);
-    const res = await fetch(`${API_URL}/api/ideas/upload`, {
-      method: 'POST',
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      body: formData,
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Network error' }));
-      throw new Error(err.message || 'File upload failed');
-    }
-    return res.json() as Promise<ApiResponse<{ url: string; publicId: string }>>;
-  },
-
-  create: async (formData: FormData) => {
-    const token = getAuthToken();
-    const res = await fetch(`${API_URL}/api/ideas`, {
-      method: 'POST',
-      headers: {
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-      body: formData,
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Network error' }));
-      throw new Error(err.message || 'Failed to submit idea');
-    }
-    return res.json() as Promise<ApiResponse<Idea>>;
-  },
-
-  update: async (id: string, data: Partial<Idea>) => {
-    return fetchWithAuth<Idea>(`/api/ideas/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  },
-
-  delete: async (id: string) => {
-    return fetchWithAuth<{ message: string }>(`/api/ideas/${id}`, {
-      method: 'DELETE',
-    });
-  },
-
-  vote: async (id: string, voteType: 'up' | 'down') => {
-    return fetchWithAuth<{
-      upvotes: string[];
-      downvotes: string[];
-      upvotesCount: number;
-      downvotesCount: number;
-    }>(`/api/ideas/${id}/vote`, {
-      method: 'POST',
-      body: JSON.stringify({ voteType }),
-    });
-  },
-
-  getComments: async (ideaId: string) => {
-    return fetchWithAuth<IdeaComment[]>(`/api/ideas/${ideaId}/comments`);
-  },
-
-  addComment: async (ideaId: string, comment: string) => {
-    return fetchWithAuth<IdeaComment>(`/api/ideas/${ideaId}/comments`, {
-      method: 'POST',
-      body: JSON.stringify({ comment }),
-    });
-  },
-
-  deleteComment: async (commentId: string) => {
-    return fetchWithAuth<{ message: string }>(`/api/ideas/comments/${commentId}`, {
-      method: 'DELETE',
-    });
-  },
-
-  toggleHideIdea: async (id: string) => {
-    const token = getAuthToken();
-    const res = await fetch(`${API_URL}/api/ideas/${id}/hide`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      }
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Network error' }));
-      throw new Error(err.message || 'Failed to toggle visibility');
-    }
-    return res.json() as Promise<ApiResponse<{ isHidden: boolean }>>;
-  },
-
-  toggleHideComment: async (commentId: string) => {
-    const token = getAuthToken();
-    const res = await fetch(`${API_URL}/api/ideas/comments/${commentId}/hide`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-      }
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ message: 'Network error' }));
-      throw new Error(err.message || 'Failed to toggle visibility');
-    }
-    return res.json() as Promise<ApiResponse<{ isHidden: boolean }>>;
-  }
-};
 
 // ============ TYPES ============
 export interface User {
@@ -1254,28 +1020,7 @@ export interface TutorApplicationData {
   };
 }
 
-export interface Lecture {
-  _id?: string;
-  title: string;
-  description?: string;
-  videoUrl: string;
-  attachmentUrl?: string;
-}
 
-export interface Course {
-  _id: string;
-  tutorId: string | { _id: string; name: string; profileImage?: string; bio?: string; expertise?: string[] };
-  title: string;
-  description: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
-  topic: string;
-  price: number;
-  thumbnailUrl?: string;
-  lectures: Lecture[];
-  isPublished: boolean;
-  createdAt: string;
-  isEnrolled?: boolean;
-}
 
 export interface SessionSlot {
   _id: string;
@@ -1366,17 +1111,5 @@ export interface Project extends Omit<Product, 'category' | 'subcategory'> {
   documentation: string;
 }
 
-export interface MentorshipRequest {
-  _id: string;
-  userId: string | { _id: string; name: string; email: string; mobile?: string };
-  topic: string;
-  description: string;
-  preferredDate: string;
-  preferredTime: string;
-  status: 'pending' | 'approved' | 'rejected' | 'completed';
-  tutorId?: string | { _id: string; name: string; email: string; profileImage?: string; bio?: string; expertise?: string[] };
-  meetingLink?: string;
-  adminNotes?: string;
-  createdAt: string;
-}
+
 

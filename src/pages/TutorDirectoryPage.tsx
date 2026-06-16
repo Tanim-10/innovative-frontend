@@ -70,23 +70,7 @@ const TutorDirectoryPage = () => {
             </p>
           </div>
 
-          {/* Sub-navigation Tabs */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex bg-card/60 backdrop-blur-sm p-1.5 rounded-full border border-border/80 shadow-inner">
-              <Link
-                to="/robotics-courses"
-                className="px-6 py-2 rounded-full text-xs font-bold transition-all text-muted-foreground hover:text-foreground hover:bg-background/40"
-              >
-                Explore Courses
-              </Link>
-              <Link
-                to="/tutor-directory"
-                className="px-6 py-2 rounded-full text-xs font-bold transition-all bg-primary text-primary-foreground shadow-md"
-              >
-                Find Tutors
-              </Link>
-            </div>
-          </div>
+
 
           {/* Filters Bar */}
           <div className="space-y-4 mb-8">

@@ -7,7 +7,6 @@ const Footer = () => {
     { name: 'Products', path: '/eshop' },
     { name: 'Workshops', path: '/workshops' },
     { name: 'Internships', path: '/internships' },
-    { name: 'Courses', path: '/robotics-courses' },
   ];
 
   const companyLinks = [

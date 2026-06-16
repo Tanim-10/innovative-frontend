@@ -12,20 +12,29 @@ import { useToast } from '@/hooks/use-toast';
 import ProductReviews from '@/components/ProductReviews';
 import { formatPrice } from '@/utils/price';
 import { PLACEHOLDER_IMAGE, BRAND_LOGO } from '@/constants/media';
+import EShopLayout from '../components/EShopLayout';
 
 const ProjectDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [project, setProject] = useState<Project | null>(null);
   const [relatedProjects, setRelatedProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeDetailsTab, setActiveDetailsTab] = useState<'overview' | 'components' | 'guide'>('overview');
   const [checkedComponents, setCheckedComponents] = useState<Record<string, boolean>>({});
-  
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (value.trim()) {
+      navigate(`/project-kits?search=${encodeURIComponent(value.trim())}`);
+    }
+  };
+
   const { addToCart, isInCart, getQuantity, updateQuantity } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
   const { toast } = useToast();
@@ -43,7 +52,7 @@ const ProjectDetailPage = () => {
         const res = await projectsApi.getById(id);
         if (res.success) {
           setProject(res.data);
-          
+
           // Initialise checkboxes for components
           const initialChecked: Record<string, boolean> = {};
           if (res.data.components) {
@@ -102,7 +111,7 @@ const ProjectDetailPage = () => {
       subcategory: project.projectType,
       cloudinaryUrl: project.images[0] || ''
     } as any;
-    
+
     addToCart(prodAdapter, quantity);
     toast({
       title: 'Added to Cart',
@@ -143,19 +152,23 @@ const ProjectDetailPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[70vh]">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
+      <EShopLayout searchQuery={searchQuery} onSearchChange={handleSearchChange}>
+        <div className="flex justify-center items-center min-h-[70vh]">
+          <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      </EShopLayout>
     );
   }
 
   if (!project) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center max-w-md min-h-[60vh] flex flex-col justify-center">
-        <h2 className="text-2xl font-bold mb-2">Project Not Found</h2>
-        <p className="text-muted-foreground mb-6">The requested project kit is not available or has been removed.</p>
-        <Button onClick={() => navigate('/project-kits')}>Back to Hub</Button>
-      </div>
+      <EShopLayout searchQuery={searchQuery} onSearchChange={handleSearchChange}>
+        <div className="container mx-auto px-4 py-20 text-center max-w-md min-h-[60vh] flex flex-col justify-center">
+          <h2 className="text-2xl font-bold mb-2">Project Not Found</h2>
+          <p className="text-muted-foreground mb-6">The requested project kit is not available or has been removed.</p>
+          <Button onClick={() => navigate('/project-kits')}>Back to Hub</Button>
+        </div>
+      </EShopLayout>
     );
   }
 
@@ -165,28 +178,28 @@ const ProjectDetailPage = () => {
   const isWishlisted = isInWishlist(project._id);
 
   return (
-    <>
-      <SEO 
-        title={`${project.name} - Robotics Kit`} 
-        description={project.shortDescription} 
+    <EShopLayout searchQuery={searchQuery} onSearchChange={handleSearchChange}>
+      <SEO
+        title={`${project.name} - Robotics Kit`}
+        description={project.shortDescription}
         image={project.images[0] || BRAND_LOGO}
-        path={`/project/${project._id}`} 
+        path={`/project/${project._id}`}
       />
       <div className="network-bg min-h-screen py-6 sm:py-12">
         <div className="container mx-auto px-4 max-w-5xl">
-          
+
           {/* Breadcrumb */}
           <nav className="flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground mb-6" aria-label="Breadcrumb">
             <Link to="/" className="hover:text-foreground">Home</Link>
             <span>/</span>
-            <Link to="/project-kits" className="hover:text-foreground">Project Kits & Consultation</Link>
+            <Link to="/project-kits" className="hover:text-foreground">Project Kits</Link>
             <span>/</span>
             <span className="text-foreground font-semibold truncate max-w-xs">{project.name}</span>
           </nav>
 
           {/* Project Header section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start bg-card/45 backdrop-blur-sm border border-border/80 rounded-2xl p-4 sm:p-6 md:p-8 mb-10">
-            
+
             {/* Gallery */}
             <div className="space-y-4">
               <div className="aspect-square bg-background border border-border/50 rounded-xl overflow-hidden relative flex items-center justify-center">
@@ -197,18 +210,18 @@ const ProjectDetailPage = () => {
                     const current = mediaItems[currentImageIndex];
                     if (current?.type === 'image') {
                       return (
-                        <img 
-                          src={current.url} 
-                          alt={project.name} 
-                          className="w-full h-full object-contain p-4" 
+                        <img
+                          src={current.url}
+                          alt={project.name}
+                          className="w-full h-full object-contain p-4"
                           loading="eager"
                         />
                       );
                     }
                     return (
-                      <video 
-                        src={current?.url} 
-                        controls 
+                      <video
+                        src={current?.url}
+                        controls
                         className="w-full h-full object-contain p-4"
                       />
                     );
@@ -243,9 +256,8 @@ const ProjectDetailPage = () => {
                     <button
                       key={idx}
                       onClick={() => setCurrentImageIndex(idx)}
-                      className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-colors ${
-                        currentImageIndex === idx ? 'border-primary' : 'border-transparent'
-                      }`}
+                      className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-colors ${currentImageIndex === idx ? 'border-primary' : 'border-transparent'
+                        }`}
                     >
                       {item.type === 'image' ? (
                         <img src={item.url} alt="" className="w-full h-full object-cover" />
@@ -271,11 +283,11 @@ const ProjectDetailPage = () => {
                     Difficulty: {project.difficulty}
                   </Badge>
                 </div>
-                
+
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-foreground tracking-tight leading-tight">
                   {project.name}
                 </h1>
-                
+
                 <div className="flex items-center gap-3 text-xs text-muted-foreground font-semibold">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3.5 h-3.5 text-primary" />
@@ -332,7 +344,7 @@ const ProjectDetailPage = () => {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  
+
                   <span className="text-xs text-muted-foreground font-semibold">Select quantity</span>
                 </div>
 
@@ -355,9 +367,9 @@ const ProjectDetailPage = () => {
                       <ShoppingCart className="w-4 h-4" />
                       Add to Cart
                     </Button>
-                    <Button 
-                      onClick={handleBuyNow} 
-                      className="flex-1 font-bold rounded-lg" 
+                    <Button
+                      onClick={handleBuyNow}
+                      className="flex-1 font-bold rounded-lg"
                       variant="secondary"
                       disabled={project.stock <= 0}
                     >
@@ -371,9 +383,8 @@ const ProjectDetailPage = () => {
               <div className="flex items-center gap-4 text-xs font-semibold border-t border-border/30 pt-4">
                 <button
                   onClick={handleWishlistToggle}
-                  className={`flex items-center gap-1.5 transition-colors ${
-                    isWishlisted ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`flex items-center gap-1.5 transition-colors ${isWishlisted ? 'text-red-500' : 'text-muted-foreground hover:text-foreground'
+                    }`}
                 >
                   <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-current' : ''}`} />
                   {isWishlisted ? 'Wishlisted' : 'Add to Wishlist'}
@@ -403,47 +414,44 @@ const ProjectDetailPage = () => {
             <div className="flex border-b border-border/60 bg-muted/20">
               <button
                 onClick={() => setActiveDetailsTab('overview')}
-                className={`flex-1 py-4 text-xs sm:text-sm font-bold border-b-2 transition-all gap-1.5 flex items-center justify-center ${
-                  activeDetailsTab === 'overview'
+                className={`flex-1 py-4 text-xs sm:text-sm font-bold border-b-2 transition-all gap-1.5 flex items-center justify-center ${activeDetailsTab === 'overview'
                     ? 'border-primary text-primary bg-background/30'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 <Layers className="w-4 h-4" />
                 Overview
               </button>
               <button
                 onClick={() => setActiveDetailsTab('components')}
-                className={`flex-1 py-4 text-xs sm:text-sm font-bold border-b-2 transition-all gap-1.5 flex items-center justify-center ${
-                  activeDetailsTab === 'components'
+                className={`flex-1 py-4 text-xs sm:text-sm font-bold border-b-2 transition-all gap-1.5 flex items-center justify-center ${activeDetailsTab === 'components'
                     ? 'border-primary text-primary bg-background/30'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 <ListChecks className="w-4 h-4" />
                 Parts Checklist
               </button>
               <button
                 onClick={() => setActiveDetailsTab('guide')}
-                className={`flex-1 py-4 text-xs sm:text-sm font-bold border-b-2 transition-all gap-1.5 flex items-center justify-center ${
-                  activeDetailsTab === 'guide'
+                className={`flex-1 py-4 text-xs sm:text-sm font-bold border-b-2 transition-all gap-1.5 flex items-center justify-center ${activeDetailsTab === 'guide'
                     ? 'border-primary text-primary bg-background/30'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 <BookOpen className="w-4 h-4" />
                 Build Guide
               </button>
             </div>
-            
+
             <div className="p-6 sm:p-8">
-              
+
               {/* Overview */}
               {activeDetailsTab === 'overview' && (
                 <div className="space-y-6">
                   <div>
                     <h3 className="text-base font-bold text-foreground mb-3">Project Description</h3>
-                    <div 
+                    <div
                       className="text-xs sm:text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{ __html: project.longDescription || 'No description provided.' }}
                     />
@@ -482,19 +490,18 @@ const ProjectDetailPage = () => {
                   {project.components && project.components.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2 max-w-2xl">
                       {project.components.map((comp) => (
-                        <div 
-                          key={comp} 
+                        <div
+                          key={comp}
                           onClick={() => toggleComponentCheck(comp)}
-                          className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all select-none ${
-                            checkedComponents[comp] 
-                              ? 'bg-primary/5 border-primary text-foreground' 
+                          className={`flex items-center gap-3 p-3 border rounded-xl cursor-pointer transition-all select-none ${checkedComponents[comp]
+                              ? 'bg-primary/5 border-primary text-foreground'
                               : 'bg-background/20 border-border/60 hover:bg-muted/10 text-muted-foreground'
-                          }`}
+                            }`}
                         >
-                          <input 
+                          <input
                             type="checkbox"
                             checked={checkedComponents[comp] || false}
-                            onChange={() => {}} // toggling handled by parent div onClick
+                            onChange={() => { }} // toggling handled by parent div onClick
                             className="rounded text-primary focus:ring-primary w-4 h-4 bg-secondary/50 border-input"
                           />
                           <span className={`text-xs font-semibold ${checkedComponents[comp] ? 'line-through opacity-85 text-primary' : ''}`}>
@@ -518,10 +525,10 @@ const ProjectDetailPage = () => {
                       Follow these assembly instructions, schematics, and source code blocks to build and upload code to your project.
                     </p>
                   </div>
-                  
+
                   {project.documentation ? (
                     <div className="bg-secondary/15 border border-border/50 rounded-xl p-5 mt-3">
-                      <div 
+                      <div
                         className="text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed prose prose-invert max-w-none"
                         dangerouslySetInnerHTML={{ __html: project.documentation }}
                       />
@@ -555,8 +562,8 @@ const ProjectDetailPage = () => {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {relatedProjects.map((p) => (
-                  <Link 
-                    key={p._id} 
+                  <Link
+                    key={p._id}
                     to={`/project/${p._id}`}
                     className="bg-card/50 backdrop-blur-sm border border-border/60 hover:border-primary/50 rounded-xl p-3 flex flex-col justify-between hover:shadow-md transition-all group hover:-translate-y-0.5"
                   >
@@ -585,7 +592,7 @@ const ProjectDetailPage = () => {
 
         </div>
       </div>
-    </>
+    </EShopLayout>
   );
 };
 

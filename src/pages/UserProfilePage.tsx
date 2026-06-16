@@ -2,11 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { 
   User as UserIcon, BookOpen, GraduationCap, Linkedin, Award, 
-  Globe, Edit3, Save, X, Upload, MessageCircle, ThumbsUp, 
-  FileText, ArrowLeft, Calendar, Shield, Sparkles, Mail, Phone
+  Globe, Edit3, Save, X, Upload, ArrowLeft, Calendar, Sparkles, Mail, Phone
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { publicProfileApi, ideasApi, userApi, Idea, User } from '../services/api';
+import { publicProfileApi, userApi, User } from '../services/api';
 import { toast } from 'sonner';
 
 const PLACEHOLDER_IMAGE = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80";
@@ -18,9 +17,7 @@ const UserProfilePage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [profileUser, setProfileUser] = useState<User | null>(null);
-  const [ideas, setIdeas] = useState<Idea[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeSubTab, setActiveSubTab] = useState<'posts' | 'structured'>('posts');
   
   // Edit Profile State
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -52,13 +49,11 @@ const UserProfilePage: React.FC = () => {
   const fetchProfileData = async () => {
     setIsLoading(true);
     try {
-      // 1. Fetch public profile details
       const profileRes = await publicProfileApi.getProfile(userId!);
       if (profileRes.success && profileRes.data) {
         const u = profileRes.data;
         setProfileUser(u);
         
-        // Initialize edit form values
         setEditForm({
           name: u.name || '',
           mobile: u.mobile || '',
@@ -75,24 +70,17 @@ const UserProfilePage: React.FC = () => {
         });
       } else {
         toast.error('User not found');
-        navigate('/resources');
+        navigate('/');
         return;
-      }
-
-      // 2. Fetch ideas created by this user
-      const ideasRes = await ideasApi.getAll({ userId: userId! });
-      if (ideasRes.success) {
-        setIdeas(ideasRes.data);
       }
     } catch (err: any) {
       toast.error(err.message || 'Failed to load profile');
-      navigate('/resources');
+      navigate('/');
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Upload avatar to Cloudinary
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     const file = e.target.files[0];
@@ -103,7 +91,7 @@ const UserProfilePage: React.FC = () => {
 
     setUploadingAvatar(true);
     try {
-      const res = await ideasApi.uploadFile(file);
+      const res = await userApi.uploadAvatar(file);
       if (res.success && res.data.url) {
         setEditForm(prev => ({ ...prev, profileImage: res.data.url }));
         toast.success('Avatar uploaded successfully!');
@@ -115,7 +103,6 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
-  // Submit profile edits
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editForm.name.trim()) {
@@ -148,9 +135,7 @@ const UserProfilePage: React.FC = () => {
       if (res.success) {
         toast.success('Profile updated successfully!');
         setIsEditing(false);
-        // Refresh local details
         fetchProfileData();
-        // Refresh global details in AuthContext
         await refreshUser();
       }
     } catch (err: any) {
@@ -160,7 +145,6 @@ const UserProfilePage: React.FC = () => {
     }
   };
 
-  // Date formatting
   const formatDate = (dateStr: string) => {
     return new Date(dateStr).toLocaleDateString('en-IN', {
       day: '2-digit',
@@ -182,17 +166,14 @@ const UserProfilePage: React.FC = () => {
 
   if (!profileUser) return null;
 
-  const userPosts = ideas.filter(idea => idea.type === 'community');
-  const userStructured = ideas.filter(idea => idea.type === 'structured');
-
   return (
     <div className="network-bg min-h-screen py-10 sm:py-16 md:py-20 text-foreground">
-      <div className="container mx-auto px-4 max-w-5xl relative z-10">
+      <div className="container mx-auto px-4 max-w-4xl relative z-10">
         
         {/* Back Button */}
-        <Link to="/resources" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors mb-6 pt-4">
+        <Link to="/" className="inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors mb-6 pt-4">
           <ArrowLeft className="w-4 h-4" />
-          Back to Resource Hub
+          Back to Home
         </Link>
 
         {/* Profile Details Header Card */}
@@ -306,162 +287,25 @@ const UserProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Contribution tabs list */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          
-          {/* Left panel: contribution lists */}
-          <div className="lg:col-span-2 space-y-6">
-            
-            {/* Tabs control header */}
-            <div className="flex bg-card border border-border p-1.5 rounded-2xl max-w-max shadow-md">
-              <button
-                onClick={() => setActiveSubTab('posts')}
-                className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeSubTab === 'posts'
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Community Posts ({userPosts.length})
-              </button>
-              <button
-                onClick={() => setActiveSubTab('structured')}
-                className={`px-5 py-2.5 rounded-xl text-xs font-bold transition-all duration-300 ${
-                  activeSubTab === 'structured'
-                    ? 'bg-primary text-primary-foreground shadow-md'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Structured Resources ({userStructured.length})
-              </button>
-            </div>
-
-            {/* List */}
-            {activeSubTab === 'posts' ? (
-              userPosts.length === 0 ? (
-                <div className="text-center py-16 bg-card border border-border/80 rounded-3xl p-6">
-                  <MessageCircle className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-xs text-muted-foreground">No community posts created yet.</p>
-                </div>
-              ) : (
-                <div className="space-y-4 animate-fade-in">
-                  {userPosts.map(post => (
-                    <div key={post._id} className="bg-card border border-border/80 rounded-2xl p-5 hover:border-primary/30 transition-all duration-300">
-                      <div className="flex justify-between items-center text-xs text-muted-foreground mb-3">
-                        <span>Posted on {formatDate(post.createdAt)}</span>
-                        {post.isHidden && (
-                          <span className="bg-amber-500/10 text-amber-600 border border-amber-500/20 text-[9px] px-1.5 py-0.5 rounded uppercase font-bold">Hidden</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-foreground font-medium mb-4 whitespace-pre-wrap">{post.description}</p>
-                      
-                      {post.photos.length > 0 && (
-                        <div className="grid grid-cols-3 gap-2 mb-4">
-                          {post.photos.map((url, idx) => (
-                            <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="block aspect-video rounded-lg overflow-hidden border border-border bg-muted/20">
-                              <img src={url} alt="post attachment" className="w-full h-full object-cover" />
-                            </a>
-                          ))}
-                        </div>
-                      )}
-
-                      <div className="flex gap-4 border-t border-border/30 pt-3.5 text-xs text-muted-foreground font-semibold">
-                        <span className="flex items-center gap-1"><ThumbsUp className="w-3.5 h-3.5 text-primary" /> {post.upvotes.length}</span>
-                        <span className="flex items-center gap-1"><MessageCircle className="w-3.5 h-3.5 text-primary" /> {post.commentsCount} Comments</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )
-            ) : (
-              userStructured.length === 0 ? (
-                <div className="text-center py-16 bg-card border border-border/80 rounded-3xl p-6">
-                  <FileText className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-xs text-muted-foreground">No structured ideas uploaded yet.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in">
-                  {userStructured.map(idea => (
-                    <Link 
-                      key={idea._id} 
-                      to="/resources" 
-                      onClick={() => {
-                        toast.info("Opening detailed view on the Resource Hub");
-                      }}
-                      className="bg-card border border-border/80 rounded-2xl p-5 hover:border-primary/45 transition-all duration-300 flex flex-col justify-between hover:-translate-y-0.5 hover:shadow-md"
-                    >
-                      <div>
-                        <div className="flex justify-between items-center text-[10px] text-muted-foreground mb-2">
-                          <span className="px-2 py-0.5 bg-primary/10 border border-primary/20 text-primary uppercase rounded font-bold">{idea.category}</span>
-                          <span>{formatDate(idea.createdAt)}</span>
-                        </div>
-                        <h4 className="text-sm font-extrabold text-foreground mb-2 line-clamp-1">{idea.title}</h4>
-                        <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed mb-4">{idea.description}</p>
-                      </div>
-
-                      <div className="flex justify-between items-center border-t border-border pt-3 text-[10px] text-muted-foreground font-semibold">
-                        <span className="flex items-center gap-1">
-                          <ThumbsUp className="w-3 h-3 text-primary" />
-                          {idea.upvotes.length} upvotes
-                        </span>
-                        {idea.files.length > 0 && (
-                          <span className="flex items-center gap-1 text-primary">
-                            <FileText className="w-3 h-3" />
-                            {idea.files.length} doc(s)
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )
-            )}
-
-          </div>
-
-          {/* Right panel: statistics overview */}
-          <div className="space-y-6">
-            
-            {/* Quick stats */}
-            <div className="bg-card border border-border/85 rounded-2xl p-5 shadow-lg space-y-4">
-              <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">Contributions Stats</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-muted/45 border border-border p-4 rounded-2xl text-center">
-                  <p className="text-xl font-extrabold text-foreground">{ideas.length}</p>
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Total Hub Ideas</p>
-                </div>
-                <div className="bg-muted/45 border border-border p-4 rounded-2xl text-center">
-                  <p className="text-xl font-extrabold text-foreground">
-                    {ideas.reduce((acc, curr) => acc + curr.upvotes.length, 0)}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground uppercase font-bold mt-1">Upvotes Received</p>
-                </div>
+        {/* Private Contact info */}
+        {isSelf && (
+          <div className="bg-card/60 border border-border/80 rounded-2xl p-6 shadow-lg max-w-md mx-auto space-y-4">
+            <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">Private Account Info</h3>
+            <div className="space-y-2.5 border-t border-border pt-3 text-xs text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-primary shrink-0" />
+                <span className="truncate">{currentUser?.email}</span>
               </div>
-            </div>
-
-            {/* Private Contact info */}
-            {isSelf && (
-              <div className="bg-card border border-border/85 rounded-2xl p-5 shadow-lg space-y-3 text-xs text-muted-foreground">
-                <h3 className="text-xs font-bold text-foreground uppercase tracking-wide">Private Account Info</h3>
-                <div className="space-y-2.5 border-t border-border pt-3">
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-primary shrink-0" />
-                    <span className="truncate">{currentUser?.email}</span>
-                  </div>
-                  {currentUser?.mobile && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-primary shrink-0" />
-                      <span>{currentUser.mobile}</span>
-                    </div>
-                  )}
-                  <p className="text-[10px] text-muted-foreground mt-2 italic">This section is private to you. Other makers only see your public socials and education.</p>
+              {currentUser?.mobile && (
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-primary shrink-0" />
+                  <span>{currentUser.mobile}</span>
                 </div>
-              </div>
-            )}
-
+              )}
+              <p className="text-[10px] text-muted-foreground mt-2 italic">This section is private to you. Other makers only see your public socials and education.</p>
+            </div>
           </div>
-
-        </div>
+        )}
 
       </div>
 

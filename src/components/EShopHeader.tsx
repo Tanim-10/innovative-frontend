@@ -23,10 +23,16 @@ const EShopHeader = ({ searchQuery = '', onSearchChange, hideSearch = false }: E
   const { totalItems: wishlistItems } = useWishlist();
   const { categories } = useCategories();
 
+  const isProjectPage = location.pathname.startsWith('/project-kits') || location.pathname.startsWith('/project/');
+
   const submitSearchToListing = () => {
     const q = searchQuery.trim();
     if (!q) return;
-    navigate(`/eshop/products?search=${encodeURIComponent(q)}`);
+    if (location.pathname.startsWith('/project-kits') || location.pathname.startsWith('/project/')) {
+      navigate(`/project-kits?search=${encodeURIComponent(q)}`);
+    } else {
+      navigate(`/eshop/products?search=${encodeURIComponent(q)}`);
+    }
   };
 
   return (
@@ -39,14 +45,16 @@ const EShopHeader = ({ searchQuery = '', onSearchChange, hideSearch = false }: E
           <div className={`flex items-center justify-between h-16 md:h-20 gap-2 ${hideSearch ? 'md:flex md:justify-between' : 'md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-3'}`}>
             <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 md:flex-initial md:shrink-0">
               {/* Menu Button - Opens Category Sidebar (touch-friendly) */}
-              <button
-                type="button"
-                className="p-2 sm:p-2.5 -ml-1 text-foreground hover:bg-secondary active:bg-secondary/80 rounded-lg transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
-                onClick={() => setIsSidebarOpen(true)}
-                aria-label="Open categories"
-              >
-                <Menu className="w-6 h-6" />
-              </button>
+              {!isProjectPage && (
+                <button
+                  type="button"
+                  className="p-2 sm:p-2.5 -ml-1 text-foreground hover:bg-secondary active:bg-secondary/80 rounded-lg transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+                  onClick={() => setIsSidebarOpen(true)}
+                  aria-label="Open categories"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
+              )}
 
               {/* Logo + brand text (text always to the right of logo; truncates on narrow phones) */}
               <Link
@@ -138,35 +146,37 @@ const EShopHeader = ({ searchQuery = '', onSearchChange, hideSearch = false }: E
           )}
 
           {/* Category Navigation - Desktop */}
-          <nav className="hidden lg:flex items-center gap-2 py-3 overflow-x-auto">
-            {categories.map((category) => (
-              <Link
-                key={category._id}
-                to={category.slug === 'all' ? '/eshop' : `/eshop/products?category=${category.slug}`}
-                className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-colors ${
-                  location.search.includes(category.slug) || (category.slug === 'all' && location.pathname === '/eshop')
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary/50 text-foreground hover:bg-secondary'
-                }`}
+          {!isProjectPage && (
+            <nav className="hidden lg:flex items-center gap-2 py-3 overflow-x-auto">
+              {categories.map((category) => (
+                <Link
+                  key={category._id}
+                  to={category.slug === 'all' ? '/eshop' : `/eshop/products?category=${category.slug}`}
+                  className={`px-4 py-2 text-sm font-medium rounded-full whitespace-nowrap transition-colors ${
+                    location.search.includes(category.slug) || (category.slug === 'all' && location.pathname === '/eshop')
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-secondary/50 text-foreground hover:bg-secondary'
+                  }`}
+                >
+                  {category.name}
+                </Link>
+              ))}
+              <Link 
+                to="/wishlist"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-secondary/50 text-foreground hover:bg-secondary whitespace-nowrap transition-colors"
               >
-                {category.name}
+                <Heart className="w-4 h-4" />
+                Wish List
               </Link>
-            ))}
-            <Link 
-              to="/wishlist"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-secondary/50 text-foreground hover:bg-secondary whitespace-nowrap transition-colors"
-            >
-              <Heart className="w-4 h-4" />
-              Wish List
-            </Link>
-            <Link 
-              to="/cart"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-primary text-primary-foreground whitespace-nowrap transition-colors"
-            >
-              <ShoppingCart className="w-4 h-4" />
-              Add To Cart
-            </Link>
-          </nav>
+              <Link 
+                to="/cart"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full bg-primary text-primary-foreground whitespace-nowrap transition-colors"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                Add To Cart
+              </Link>
+            </nav>
+          )}
         </div>
       </header>
     </>

@@ -39,9 +39,7 @@ const TutorRegisterPage = lazy(() => import("./pages/TutorRegisterPage"));
 const TutorDirectoryPage = lazy(() => import("./pages/TutorDirectoryPage"));
 const TutorProfilePage = lazy(() => import("./pages/TutorProfilePage"));
 const TutorDashboardPage = lazy(() => import("./pages/TutorDashboardPage"));
-const CourseCatalogPage = lazy(() => import("./pages/CourseCatalogPage"));
-const CourseDetailPage = lazy(() => import("./pages/CourseDetailPage"));
-const CourseViewerPage = lazy(() => import("./pages/CourseViewerPage"));
+const ProductDevelopmentPage = lazy(() => import("./pages/ProductDevelopmentPage"));
 const WorkshopsPage = lazy(() => import("./pages/WorkshopsPage"));
 const WorkshopDetailPage = lazy(() => import("./pages/WorkshopDetailPage"));
 const InternshipsPage = lazy(() => import("./pages/InternshipsPage"));
@@ -50,7 +48,6 @@ const TermsConditionsPage = lazy(() => import("./pages/TermsConditionsPage"));
 const GalleryPage = lazy(() => import("./pages/GalleryPage"));
 const ProjectsConsultancyPage = lazy(() => import("./pages/ProjectsConsultancyPage"));
 const ProjectDetailPage = lazy(() => import("./pages/ProjectDetailPage"));
-const IdeasHubPage = lazy(() => import("./pages/IdeasHubPage"));
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -97,9 +94,6 @@ const App = () => (
                   <Route path="/order/:orderId" element={<OrderDetailPage />} />
                   <Route path="/order-tracking" element={<OrderTrackingPage />} />
                   <Route path="/wishlist" element={<WishlistPage />} />
-                  <Route path="/robotics-courses" element={<AcademyLayout><CourseCatalogPage /></AcademyLayout>} />
-                  <Route path="/course/:id" element={<AcademyLayout><CourseDetailPage /></AcademyLayout>} />
-                  <Route path="/classroom/:id" element={<CourseViewerPage />} />
                   <Route path="/tutor-directory" element={<AcademyLayout><TutorDirectoryPage /></AcademyLayout>} />
                   <Route path="/tutor/:id" element={<AcademyLayout><TutorProfilePage /></AcademyLayout>} />
                   <Route path="/tutor-registration" element={<AcademyLayout><TutorRegisterPage /></AcademyLayout>} />
@@ -110,9 +104,9 @@ const App = () => (
                   <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
                   <Route path="/terms-conditions" element={<TermsConditionsPage />} />
                   <Route path="/gallery" element={<GalleryPage />} />
-                  <Route path="/project-kits" element={<Layout><ProjectsConsultancyPage /></Layout>} />
-                  <Route path="/project/:id" element={<Layout><ProjectDetailPage /></Layout>} />
-                  <Route path="/resources" element={<Layout><IdeasHubPage /></Layout>} />
+                  <Route path="/product-development" element={<ProductDevelopmentPage />} />
+                  <Route path="/project-kits" element={<ProjectsConsultancyPage />} />
+                  <Route path="/project/:id" element={<ProjectDetailPage />} />
                   <Route path="/profile/:userId" element={<Layout><UserProfilePage /></Layout>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>

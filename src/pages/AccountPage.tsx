@@ -19,7 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { ordersApi, userApi, coursesApi, sessionsApi, Order, Address, Course, SessionSlot } from '../services/api';
+import { ordersApi, userApi, sessionsApi, Order, Address, SessionSlot } from '../services/api';
 import { formatPrice } from '@/utils/price';
 import { normalizeIndianMobile10, isValidIndianMobile10 } from '@/utils/phone';
 import { PLACEHOLDER_IMAGE } from '@/constants/media';
@@ -38,10 +38,8 @@ const AccountPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   
-  // Courses and Sessions states
-  const [enrolledCourses, setEnrolledCourses] = useState<Course[]>([]);
+  // Sessions states
   const [studentSessions, setStudentSessions] = useState<SessionSlot[]>([]);
-  const [isLoadingCourses, setIsLoadingCourses] = useState(false);
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
   
   // Settings form state
@@ -88,7 +86,7 @@ const AccountPage = () => {
   }, [user]);
 
   useEffect(() => {
-    const allowed = ['orders', 'wishlist', 'settings', 'addresses', 'logout', 'courses', 'sessions'] as const;
+    const allowed = ['orders', 'wishlist', 'settings', 'addresses', 'logout', 'sessions'] as const;
     if (tabParam && (allowed as readonly string[]).includes(tabParam)) {
       setActiveTab(tabParam);
     }
@@ -146,23 +144,11 @@ const AccountPage = () => {
     }
   }, [isAuthenticated]);
 
-  // Fetch enrolled courses and booked sessions
+  // Fetch booked sessions
   useEffect(() => {
-    const fetchCoursesAndSessions = async () => {
+    const fetchSessions = async () => {
       if (!isAuthenticated) return;
-      setIsLoadingCourses(true);
       setIsLoadingSessions(true);
-      try {
-        const courseRes = await coursesApi.getEnrolledCourses();
-        if (courseRes.success) {
-          setEnrolledCourses(courseRes.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch enrolled courses:', err);
-      } finally {
-        setIsLoadingCourses(false);
-      }
-
       try {
         const sessionRes = await sessionsApi.getStudentSessions();
         if (sessionRes.success) {
@@ -174,7 +160,7 @@ const AccountPage = () => {
         setIsLoadingSessions(false);
       }
     };
-    fetchCoursesAndSessions();
+    fetchSessions();
   }, [isAuthenticated]);
 
   // Get wishlist products - wishlistItems is Product[]
@@ -422,11 +408,7 @@ const AccountPage = () => {
                 <span className="hidden sm:inline">My Orders</span>
                 <span className="sm:hidden">Orders</span>
               </TabsTrigger>
-              <TabsTrigger value="courses" className="gap-2 min-h-[44px] touch-manipulation data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                <GraduationCap className="w-4 h-4" />
-                <span className="hidden sm:inline">My Courses</span>
-                <span className="sm:hidden">Courses</span>
-              </TabsTrigger>
+
               <TabsTrigger value="sessions" className="gap-2 min-h-[44px] touch-manipulation data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Calendar className="w-4 h-4" />
                 <span className="hidden sm:inline">My Sessions</span>
@@ -1022,56 +1004,7 @@ const AccountPage = () => {
               </Card>
             </TabsContent>
 
-            {/* My Courses Tab */}
-            <TabsContent value="courses" className="space-y-4">
-              <Card className="bg-card/60 backdrop-blur-sm border-border">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <GraduationCap className="w-5 h-5 text-primary" />
-                    Enrolled Courses
-                  </CardTitle>
-                  <CardDescription>Access your virtual robotics classrooms</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {isLoadingCourses ? (
-                    <div className="flex justify-center py-8">
-                      <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-                    </div>
-                  ) : enrolledCourses.length === 0 ? (
-                    <div className="text-center py-12">
-                      <GraduationCap className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                      <p className="text-muted-foreground mb-4">You are not enrolled in any courses yet</p>
-                      <Button asChild>
-                        <Link to="/robotics-courses">Browse Robotics Academy</Link>
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {enrolledCourses.map((course) => (
-                        <Card key={course._id} className="bg-background/40 border border-border flex flex-col justify-between overflow-hidden">
-                          <img
-                            src={course.thumbnailUrl || PLACEHOLDER_IMAGE}
-                            alt={course.title}
-                            className="w-full h-36 object-cover border-b border-border/40"
-                          />
-                          <CardHeader className="p-4">
-                            <CardTitle className="text-sm font-bold line-clamp-1">{course.title}</CardTitle>
-                            <CardDescription className="text-xs">
-                              Instructor: {typeof course.tutorId === 'object' ? (course.tutorId as any).name : 'Tutor'}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="px-4 pb-4 pt-0">
-                            <Button size="sm" className="w-full font-semibold" asChild>
-                              <Link to={`/classroom/${course._id}`}>Go to Classroom</Link>
-                            </Button>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
+
 
             {/* My Booked Sessions Tab */}
             <TabsContent value="sessions" className="space-y-4">
