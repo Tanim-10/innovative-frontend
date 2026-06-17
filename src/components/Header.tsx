@@ -28,7 +28,7 @@ const Header = () => {
           <Link to="/" className="flex items-center gap-3" onClick={closeMobileMenu}>
             <LogoMark variant="navDark" priority />
             <span className="text-lg md:text-xl font-bold text-white tracking-tight">
-              Innovative <span className="text-white">Hub</span>
+              JG Innovative <span className="text-white">Hub</span>
             </span>
           </Link>
 

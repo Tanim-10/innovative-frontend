@@ -18,6 +18,7 @@ import ScrollReveal from '@/components/ScrollReveal';
 const AboutPage = () => {
   const fullText = "JG Innovative Hub";
   const [typedText, setTypedText] = useState("");
+  const [isTypingDone, setIsTypingDone] = useState(false);
   
   useEffect(() => {
     let i = 0;
@@ -27,6 +28,7 @@ const AboutPage = () => {
         i++;
       } else {
         clearInterval(timer);
+        setIsTypingDone(true);
       }
     }, 120);
     return () => clearInterval(timer);
@@ -51,7 +53,7 @@ const AboutPage = () => {
       
       <div className="network-bg min-h-screen text-foreground">
         {/* Hero Section */}
-        <section className="relative py-16 md:py-24 overflow-hidden border-b border-border/10">
+        <section className="relative py-12 md:py-16 overflow-hidden border-b border-border/10">
           <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
@@ -60,7 +62,7 @@ const AboutPage = () => {
                 Innovation Engineering Excellence
               </div>
               <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tight mb-6 leading-tight">
-                About <span className="text-primary border-r-4 border-primary pr-1 typewriter-cursor inline-block">{typedText}</span>
+                About <span className={`text-primary pr-1 inline-block ${isTypingDone ? 'border-r-0' : 'border-r-4 border-primary typewriter-cursor'}`}>{typedText}</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-light max-w-3xl mx-auto">
                 JG Innovative Hub Pvt. Ltd. is an innovation-driven technology and product engineering company. We bridge the gap between concept and implementation by creating technologies that contribute to a smarter, more connected, and sustainable future.
@@ -70,10 +72,10 @@ const AboutPage = () => {
         </section>
 
         {/* Our Core Philosophy Section (Put First - Enlarged Text) */}
-        <section className="py-20 md:py-24 bg-muted/5 border-b border-border/10">
+        <section className="py-12 md:py-16 bg-muted/5 border-b border-border/10">
           <div className="container mx-auto px-4 max-w-6xl">
             <ScrollReveal>
-              <div className="text-center mb-16 max-w-2xl mx-auto">
+              <div className="text-center mb-10 max-w-2xl mx-auto">
                 <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">Our Core Philosophy</h2>
                 <p className="text-sm sm:text-base text-muted-foreground mt-2 uppercase tracking-widest font-semibold text-primary">
                   Learn • Build • Share • Innovate
@@ -81,7 +83,7 @@ const AboutPage = () => {
               </div>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
                   title: 'Learn',
@@ -129,10 +131,10 @@ const AboutPage = () => {
         </section>
 
         {/* Leadership Team (Put Second - Enlarged Text) */}
-        <section className="py-20 md:py-28 bg-muted/10 border-b border-border/10">
+        <section className="py-12 md:py-16 bg-muted/10 border-b border-border/10">
           <div className="container mx-auto px-4 max-w-6xl">
             <ScrollReveal>
-              <div className="text-center mb-20 max-w-2xl mx-auto">
+              <div className="text-center mb-12 max-w-2xl mx-auto">
                 <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-4">Founder & Directors</h2>
                 <p className="text-base sm:text-lg text-muted-foreground">
                   Meet the visionaries leading JG Innovative Hub toward strategic technological advancement and expansion.
@@ -140,10 +142,10 @@ const AboutPage = () => {
               </div>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-12">
+            <div className="space-y-8 max-w-4xl mx-auto">
               {/* Founder Profile */}
-              <ScrollReveal delay={0} className="h-full">
-                <div className="bg-card border border-border/60 hover:border-primary/45 hover:shadow-md transition-all rounded-3xl p-8 sm:p-10 block md:flow-root group h-full">
+              <ScrollReveal delay={0} className="w-full">
+                <div className="bg-card border border-border/60 hover:border-primary/45 hover:shadow-md transition-all rounded-3xl p-8 sm:p-10 block md:flow-root group">
                   <div className="w-full md:w-52 flex flex-col items-center mx-auto md:mx-0 md:float-left md:mr-8 md:mb-6 mb-6">
                     <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden border border-border bg-muted/30 shadow-inner group-hover:border-primary/50 transition-colors">
                       <img 
@@ -170,25 +172,18 @@ const AboutPage = () => {
                       <p>
                         Jagadeswar Pati is the Founder and Director of JG Innovative Hub Pvt. Ltd. With a strong foundation in Robotics, Embedded Systems, Renewable Energy Technologies, and Product Development, he has dedicated his career to creating practical engineering solutions that solve real-world challenges. His passion for innovation, research, and technology-driven impact forms the cornerstone of the company's vision and long-term growth strategy.
                       </p>
-                      <p>
-                        As the CEO, he leads the organization's strategic direction, product innovation initiatives, research programs, partnerships, and business expansion efforts. He believes that innovation becomes meaningful when technology is transformed into practical solutions.
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 pt-2 justify-center md:justify-start">
-                      {["Robotics", "Embedded Systems", "Renewable Energy", "Product Development"].map((tech) => (
-                        <span key={tech} className="text-xs font-semibold text-muted-foreground bg-secondary/50 border border-border/60 px-3 py-1 rounded-full">
-                          {tech}
-                        </span>
-                      ))}
+                      <blockquote className="font-serif italic text-primary text-base sm:text-lg border-l-4 border-primary/45 pl-4 py-1.5 my-4 bg-primary/5 rounded-r-xl leading-relaxed">
+                        “As the CEO, he leads the organization's strategic direction, product innovation initiatives, research programs, partnerships, and business expansion efforts. He believes that innovation becomes meaningful when technology is transformed into practical solutions.”
+                      </blockquote>
                     </div>
                   </div>
                 </div>
               </ScrollReveal>
 
               {/* Co-Founder Profile */}
-              <ScrollReveal delay={200} className="h-full">
-                <div className="bg-card border border-border/60 hover:border-primary/45 hover:shadow-md transition-all rounded-3xl p-8 sm:p-10 block md:flow-root group h-full">
-                  <div className="w-full md:w-52 flex flex-col items-center mx-auto md:mx-0 md:float-left md:mr-8 md:mb-6 mb-6">
+              <ScrollReveal delay={200} className="w-full">
+                <div className="bg-card border border-border/60 hover:border-primary/45 hover:shadow-md transition-all rounded-3xl p-8 sm:p-10 block md:flow-root group">
+                  <div className="w-full md:w-52 flex flex-col items-center mx-auto md:mx-0 md:float-right md:ml-8 md:mb-6 mb-6">
                     <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden border border-border bg-muted/30 shadow-inner group-hover:border-primary/50 transition-colors">
                       <img 
                         src="/assets/My Poster.png" 
@@ -214,16 +209,9 @@ const AboutPage = () => {
                       <p>
                         Gopal Krushna Mahapatra is the Co-Founder and Director of JG Innovative Hub Pvt. Ltd. He brings expertise in Artificial Intelligence (AI), Internet of Things (IoT), Embedded Systems, Automation, Product Engineering, and Technology Operations. His commitment to innovation and execution plays a vital role in transforming ideas into scalable and market-ready solutions.
                       </p>
-                      <p>
-                        As the COO, he oversees organizational operations, project execution, technology implementation, team development, and strategic growth. He believes that great innovation happens when ideas meet execution to build a technology-driven future. 
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2 pt-2 justify-center md:justify-start">
-                      {["AI", "IoT", "Embedded Systems", "Automation", "Operations"].map((tech) => (
-                        <span key={tech} className="text-xs font-semibold text-muted-foreground bg-secondary/50 border border-border/60 px-3 py-1 rounded-full">
-                          {tech}
-                        </span>
-                      ))}
+                      <blockquote className="font-serif italic text-primary text-base sm:text-lg border-l-4 border-primary/45 pl-4 py-1.5 my-4 bg-primary/5 rounded-r-xl leading-relaxed">
+                        “As the COO, he oversees organizational operations, project execution, technology implementation, team development, and strategic growth. He believes that great innovation happens when ideas meet execution to build a technology-driven future.”
+                      </blockquote>
                     </div>
                   </div>
                 </div>
@@ -233,7 +221,7 @@ const AboutPage = () => {
         </section>
 
         {/* Core Profile Narrative & Targets (The Rest - Part 1) */}
-        <section className="py-16 md:py-20 bg-muted/20 border-b border-border/10">
+        <section className="py-12 md:py-16 bg-muted/20 border-b border-border/10">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <ScrollReveal>
@@ -243,7 +231,7 @@ const AboutPage = () => {
                   </h2>
                   <div className="text-muted-foreground leading-relaxed space-y-4 text-base">
                     <p>
-                      JG Innovative Hub Pvt. Ltd. is headquartered in Gothapatna, Bhubaneswar, Khordha, Odisha, with an operational presence at STPI and DLF Cybercity. Founded with the vision of transforming ideas into impactful solutions, the company is committed to advancing innovation through engineering excellence, research, emerging technologies, and practical problem-solving.
+                      JG Innovative Hub Pvt. Ltd. is headquartered in Gothapatna, Bhubaneswar, Khordha, Odisha, with an operational presence at STPI. Founded with the vision of transforming ideas into impactful solutions, the company is committed to advancing innovation through engineering excellence, research, emerging technologies, and practical problem-solving.
                     </p>
                     <p>
                       Driven by a team of passionate engineers, innovators, researchers, and technology professionals, JG Innovative Hub continuously works toward building a strong innovation ecosystem that fosters creativity, collaboration, entrepreneurship, and technological advancement. We believe that meaningful innovation is achieved when knowledge, engineering, and execution come together to create solutions that generate long-term value for individuals, industries, businesses, and communities.
@@ -318,7 +306,7 @@ const AboutPage = () => {
         </section>
 
         {/* Vision & Mission (The Rest - Part 2) */}
-        <section className="py-16 md:py-20 pb-24">
+        <section className="py-12 md:py-16 pb-16">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
               {/* Vision Card */}

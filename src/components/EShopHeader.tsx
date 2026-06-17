@@ -65,7 +65,7 @@ const EShopHeader = ({ searchQuery = '', onSearchChange, hideSearch = false }: E
                   <LogoMark variant="navLight" priority />
                 </span>
                 <span className="text-sm sm:text-lg md:text-xl font-bold text-foreground truncate min-w-0 text-left leading-tight">
-                  Innovative <span className="text-foreground">Hub</span>
+                  JG Innovative <span className="text-foreground">Hub</span>
                 </span>
               </Link>
             </div>

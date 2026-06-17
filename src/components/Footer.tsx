@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin, ExternalLink } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, ExternalLink, Youtube, MessageCircle } from 'lucide-react';
 
 const Footer = () => {
   const quickLinks = [
@@ -25,6 +25,8 @@ const Footer = () => {
     { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/innovative_hubofficial/' },
     { name: 'Facebook', icon: Facebook, url: 'https://www.facebook.com/people/Innovative-hub/61566aborrar848671/' },
     { name: 'LinkedIn', icon: Linkedin, url: 'https://linkedin.com/company/innovative-hub' },
+    { name: 'YouTube', icon: Youtube, url: '#' },
+    { name: 'WhatsApp', icon: MessageCircle, url: '#' },
   ];
 
   return (
@@ -84,30 +86,32 @@ const Footer = () => {
 
           {/* Column 4: Links / Social */}
           <div>
-            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">Links</h4>
-            <ul className="space-y-2.5">
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-4">JG Innovative Hub</h4>
+            <p className="text-sm text-footer-muted leading-relaxed mb-6">
+              JG Innovative Hub Pvt. Ltd. is an innovation-driven technology and product engineering company. We bridge the gap between concept and implementation by creating solutions for a smarter, more connected, and sustainable future.
+            </p>
+            <h4 className="text-sm font-semibold uppercase tracking-wider text-white mb-3">Follow Us</h4>
+            <div className="flex flex-wrap gap-3.5 mt-2">
               {socialLinks.map((social) => (
-                <li key={social.name}>
-                  <a
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-footer-muted hover:text-white transition-colors py-1 group touch-manipulation"
-                  >
-                    <social.icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform duration-200" />
-                    <span>{social.name}</span>
-                    <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-60 transition-opacity" />
-                  </a>
-                </li>
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full bg-white/5 border border-white/10 hover:border-primary/50 flex items-center justify-center text-footer-muted hover:text-white transition-all group touch-manipulation"
+                  title={social.name}
+                >
+                  <social.icon className="w-4.5 h-4.5 group-hover:scale-110 transition-transform duration-200" />
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
         <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-footer-muted text-center sm:text-left">
-            © {new Date().getFullYear()} Innovative Hub. All rights reserved.
+            © {new Date().getFullYear()} JG Innovative Hub. All rights reserved.
           </p>
           <p className="text-xs text-footer-muted/60 text-center sm:text-right">
             Providing tools, knowledge, and community to transform ideas into reality.

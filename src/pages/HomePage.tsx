@@ -57,7 +57,7 @@ const HomePage = () => {
     '@graph': [
       {
         '@type': 'WebSite',
-        name: 'Innovative Hub',
+        name: 'JG Innovative Hub',
         url: 'https://inovative-hub.com/',
         potentialAction: {
           '@type': 'SearchAction',
@@ -67,7 +67,7 @@ const HomePage = () => {
       },
       {
         '@type': 'Organization',
-        name: 'Innovative Hub',
+        name: 'JG Innovative Hub',
         url: 'https://inovative-hub.com/',
       },
     ],
@@ -101,7 +101,7 @@ const HomePage = () => {
         {/* Hero Content */}
         <div className="relative z-10 container mx-auto px-4 text-center pt-24 pb-6 md:pt-32 md:pb-8">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 animate-fade-in italic">
-            Innovative Hub
+            JG Innovative Hub Pvt. Ltd.
           </h1>
           <p className="text-sm md:text-base text-gray-300 max-w-2xl mx-auto mb-0 animate-fade-in px-4" style={{ animationDelay: '0.2s' }}>
             Your all-in-one innovation platform for robotics, IoT, and embedded systems. We provide the tools, knowledge, and community to transform your ideas into real-world solutions.

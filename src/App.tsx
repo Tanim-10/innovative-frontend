@@ -56,7 +56,7 @@ function PageFallback() {
     <div className="min-h-[50vh] flex flex-col items-center justify-center gap-3 px-4" role="status" aria-live="polite">
       <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" aria-hidden />
       <p className="text-sm text-muted-foreground text-center max-w-sm">
-        Loading Innovative Hub — robotics, IoT and electronics for students and makers.
+        Loading JG Innovative Hub — robotics, IoT and electronics for students and makers.
       </p>
     </div>
   );

@@ -9,12 +9,12 @@
 
 import { BRAND_LOGO_SQUARE } from '@/constants/media';
 
-export const SITE_NAME = 'Innovative Hub';
-/** Default first segment before " | Innovative Hub" for homepage-style titles */
+export const SITE_NAME = 'JG Innovative Hub';
+/** Default first segment before " | JG Innovative Hub" for homepage-style titles */
 const DEFAULT_PAGE_HEADLINE = 'Robotics, IoT & Embedded Systems Platform in Odisha';
 /** Brand-first meta for homepage and default. */
 export const DEFAULT_DESCRIPTION =
-  "Innovative Hub is Odisha's leading platform for robotics, IoT & embedded systems. Components, kits & tutorials for engineering students and makers.";
+  "JG Innovative Hub is Odisha's leading platform for robotics, IoT & embedded systems. Components, kits & tutorials for engineering students and makers.";
 /** Square brand image for default OG/Twitter when a page has no custom image */
 const DEFAULT_OG_IMAGE = BRAND_LOGO_SQUARE;
 
