@@ -64,7 +64,7 @@ const AboutPage = () => {
               <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tight mb-6 leading-tight">
                 About <span className={`text-primary pr-1 inline-block ${isTypingDone ? 'border-r-0' : 'border-r-4 border-primary typewriter-cursor'}`}>{typedText}</span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-light max-w-3xl mx-auto">
+              <p className="text-lg md:text-xl text-muted-foreground leading-relaxed font-light max-w-3xl mx-auto text-justify">
                 JG Innovative Hub Pvt. Ltd. is an innovation-driven technology and product engineering company. We bridge the gap between concept and implementation by creating technologies that contribute to a smarter, more connected, and sustainable future.
               </p>
             </div>
@@ -121,7 +121,7 @@ const AboutPage = () => {
                         <phi.icon className="w-6 h-6" />
                       </div>
                       <h3 className="text-xl sm:text-2xl font-black text-foreground mb-3">{phi.title}</h3>
-                      <p className="text-sm sm:text-base text-muted-foreground/90 font-medium leading-relaxed">{phi.desc}</p>
+                      <p className="text-sm sm:text-base text-muted-foreground/90 font-medium leading-relaxed text-justify">{phi.desc}</p>
                     </div>
                   </div>
                 </ScrollReveal>
@@ -136,7 +136,7 @@ const AboutPage = () => {
             <ScrollReveal>
               <div className="text-center mb-12 max-w-2xl mx-auto">
                 <h2 className="text-4xl md:text-5xl font-black text-foreground tracking-tight mb-4">Founder & Directors</h2>
-                <p className="text-base sm:text-lg text-muted-foreground">
+                <p className="text-base sm:text-lg text-muted-foreground text-justify">
                   Meet the visionaries leading JG Innovative Hub toward strategic technological advancement and expansion.
                 </p>
               </div>
@@ -168,12 +168,12 @@ const AboutPage = () => {
                       <h3 className="text-2xl sm:text-3xl font-black text-foreground hover:text-primary transition-colors">Jagadeswar Pati</h3>
                       <p className="text-sm sm:text-base text-primary font-bold mt-1">Chief Executive Officer (CEO)</p>
                     </div>
-                    <div className="text-sm sm:text-base text-muted-foreground/90 font-medium leading-relaxed space-y-3">
+                    <div className="text-sm sm:text-base text-muted-foreground/90 font-medium leading-relaxed space-y-3 text-justify">
                       <p>
                         Jagadeswar Pati is the Founder and Director of JG Innovative Hub Pvt. Ltd. With a strong foundation in Robotics, Embedded Systems, Renewable Energy Technologies, and Product Development, he has dedicated his career to creating practical engineering solutions that solve real-world challenges. His passion for innovation, research, and technology-driven impact forms the cornerstone of the company's vision and long-term growth strategy.
                       </p>
-                      <blockquote className="font-serif italic text-primary text-base sm:text-lg border-l-4 border-primary/45 pl-4 py-1.5 my-4 bg-primary/5 rounded-r-xl leading-relaxed">
-                        “As the CEO, he leads the organization's strategic direction, product innovation initiatives, research programs, partnerships, and business expansion efforts. He believes that innovation becomes meaningful when technology is transformed into practical solutions.”
+                      <blockquote className="font-serif italic text-primary text-base sm:text-lg border-l-4 border-primary/45 pl-4 py-1.5 my-4 bg-primary/5 rounded-r-xl leading-relaxed text-justify">
+                        “As the CEO, I lead the organization's strategic direction, product innovation initiatives, research programs, partnerships, and business expansion efforts. I believe that innovation becomes meaningful when technology is transformed into practical solutions.”
                       </blockquote>
                     </div>
                   </div>
@@ -205,12 +205,12 @@ const AboutPage = () => {
                       <h3 className="text-2xl sm:text-3xl font-black text-foreground hover:text-primary transition-colors">Gopal Krushna Mahapatra</h3>
                       <p className="text-sm sm:text-base text-primary font-bold mt-1">Chief Operating Officer (COO)</p>
                     </div>
-                    <div className="text-sm sm:text-base text-muted-foreground/90 font-medium leading-relaxed space-y-3">
+                    <div className="text-sm sm:text-base text-muted-foreground/90 font-medium leading-relaxed space-y-3 text-justify">
                       <p>
                         Gopal Krushna Mahapatra is the Co-Founder and Director of JG Innovative Hub Pvt. Ltd. He brings expertise in Artificial Intelligence (AI), Internet of Things (IoT), Embedded Systems, Automation, Product Engineering, and Technology Operations. His commitment to innovation and execution plays a vital role in transforming ideas into scalable and market-ready solutions.
                       </p>
-                      <blockquote className="font-serif italic text-primary text-base sm:text-lg border-l-4 border-primary/45 pl-4 py-1.5 my-4 bg-primary/5 rounded-r-xl leading-relaxed">
-                        “As the COO, he oversees organizational operations, project execution, technology implementation, team development, and strategic growth. He believes that great innovation happens when ideas meet execution to build a technology-driven future.”
+                      <blockquote className="font-serif italic text-primary text-base sm:text-lg border-l-4 border-primary/45 pl-4 py-1.5 my-4 bg-primary/5 rounded-r-xl leading-relaxed text-justify">
+                        “As the COO, I oversee organizational operations, project execution, technology implementation, team development, and strategic growth. I believe that great innovation happens when ideas meet execution to build a technology-driven future.”
                       </blockquote>
                     </div>
                   </div>
@@ -229,7 +229,7 @@ const AboutPage = () => {
                   <h2 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
                     Transforming Ideas into Engineering Reality
                   </h2>
-                  <div className="text-muted-foreground leading-relaxed space-y-4 text-base">
+                  <div className="text-muted-foreground leading-relaxed space-y-4 text-base text-justify">
                     <p>
                       JG Innovative Hub Pvt. Ltd. is headquartered in Gothapatna, Bhubaneswar, Khordha, Odisha, with an operational presence at STPI. Founded with the vision of transforming ideas into impactful solutions, the company is committed to advancing innovation through engineering excellence, research, emerging technologies, and practical problem-solving.
                     </p>
@@ -254,7 +254,7 @@ const AboutPage = () => {
                       <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                         Valuation Target
                       </div>
-                      <p className="text-[11px] text-muted-foreground/80 mt-2">
+                      <p className="text-[11px] text-muted-foreground/80 mt-2 text-justify">
                         Evolving into a globally recognized technology enterprise with high-growth metrics.
                       </p>
                     </div>
@@ -273,7 +273,7 @@ const AboutPage = () => {
                       <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                         Talented Workforce
                       </div>
-                      <p className="text-[11px] text-muted-foreground/80 mt-2">
+                      <p className="text-[11px] text-muted-foreground/80 mt-2 text-justify">
                         Creating large-scale employment and empowering the next generation of engineers.
                       </p>
                     </div>
@@ -295,7 +295,7 @@ const AboutPage = () => {
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-3 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-3 leading-relaxed text-justify">
                       Expanding beyond Odisha through strategic offices and development centers in <strong className="text-foreground">Hyderabad, Bengaluru, Mumbai, Uttar Pradesh, and West Bengal</strong>, enabling nationwide reach and stronger industry partnerships.
                     </p>
                   </div>
@@ -317,10 +317,10 @@ const AboutPage = () => {
                       <Target className="w-6 h-6" />
                     </div>
                     <h2 className="text-2xl font-bold text-foreground mb-4">Our Vision</h2>
-                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">
+                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base text-justify">
                       To become a globally recognized technology and innovation company that develops transformative products, advances sustainable engineering, and empowers future generations through accessible, intelligent, and impactful technologies.
                     </p>
-                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base mt-4">
+                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base mt-4 text-justify">
                       We envision a future where innovation drives progress, technology improves quality of life, and engineering solutions contribute to a smarter, more connected, and sustainable world. Through continuous innovation, global expansion, and engineering excellence, we aspire to build one of the world's most respected technology enterprises while creating meaningful social and economic impact.
                     </p>
                   </div>
@@ -335,7 +335,7 @@ const AboutPage = () => {
                       <Rocket className="w-6 h-6" />
                     </div>
                     <h2 className="text-2xl font-bold text-foreground mb-4">Our Mission</h2>
-                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base mb-6">
+                    <p className="text-muted-foreground leading-relaxed text-sm sm:text-base mb-6 text-justify">
                       To develop practical, innovative, and sustainable technology solutions that solve real-world challenges through research, engineering excellence, and product innovation.
                     </p>
                     <div className="space-y-3">

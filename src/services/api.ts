@@ -925,29 +925,56 @@ export interface InternshipApplication {
   mobile: string;
   skills: string[];
   resumeUrl: string;
-  coverLetter: string;
+  coverLetter?: string;
   portfolioUrl?: string;
+  category?: 'paid' | 'self-funded';
+  tier?: '1-month' | '45-days' | '2-month';
+  yearOfStudy?: string;
+  githubUrl?: string;
+  linkedinUrl?: string;
+  personalPortfolioUrl?: string;
   status: 'pending' | 'under-review' | 'shortlisted' | 'rejected';
+  paymentStatus?: 'free' | 'pending' | 'paid' | 'failed';
+  paymentId?: string;
+  razorpayOrderId?: string;
+  razorpay_order_id?: string;
+  razorpay_payment_id?: string;
+  razorpay_signature?: string;
   createdAt: string;
 }
 
 export const internshipsApi = {
-  apply: async (data: {
-    name: string;
-    email: string;
-    mobile: string;
-    skills: string[];
-    resumeUrl: string;
-    coverLetter: string;
-    portfolioUrl?: string;
-  }) => {
+  apply: async (data: Partial<InternshipApplication>) => {
     return fetchWithAuth<InternshipApplication>('/api/internships/apply', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   },
+  createPayment: async (tier: '1-month' | '45-days' | '2-month') => {
+    return fetchWithAuth<{
+      orderId: string;
+      amount: number;
+      currency: string;
+      keyId: string;
+    }>('/api/internships/create-payment', {
+      method: 'POST',
+      body: JSON.stringify({ tier }),
+    });
+  },
   getMyApplications: async () => {
     return fetchWithAuth<InternshipApplication[]>('/api/internships/my-applications');
+  },
+};
+
+// ============ VISITORS API ============
+export const visitorsApi = {
+  get: async () => {
+    return fetchWithAuth<{ count: number }>('/api/visitors');
+  },
+  hit: async () => {
+    return fetchWithAuth<{ count: number }>('/api/visitors/hit', {
+      method: 'POST',
+    });
   },
 };
 

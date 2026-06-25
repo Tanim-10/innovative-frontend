@@ -108,6 +108,30 @@ const HomePage = () => {
           </p>
         </div>
 
+        {/* Scrolling Marquee Hiring Line */}
+        <div className="relative z-10 w-full bg-primary/10 border-y border-primary/20 py-3 overflow-hidden my-6 backdrop-blur-sm">
+          <style>{`
+            @keyframes marquee {
+              0% { transform: translate3d(0, 0, 0); }
+              100% { transform: translate3d(-50%, 0, 0); }
+            }
+            .animate-marquee-slow {
+              display: inline-flex;
+              animation: marquee 25s linear infinite;
+            }
+          `}</style>
+          <div className="animate-marquee-slow whitespace-nowrap flex gap-12 text-xs sm:text-sm font-semibold uppercase tracking-wider text-primary">
+            <div className="flex gap-12 shrink-0">
+              <span>We are hiring interns! Apply as soon as possible • Paid and self-funded positions open • Dive into Robotics, PCB design & IoT •</span>
+              <span>We are hiring interns! Apply as soon as possible • Paid and self-funded positions open • Dive into Robotics, PCB design & IoT •</span>
+            </div>
+            <div className="flex gap-12 shrink-0">
+              <span>We are hiring interns! Apply as soon as possible • Paid and self-funded positions open • Dive into Robotics, PCB design & IoT •</span>
+              <span>We are hiring interns! Apply as soon as possible • Paid and self-funded positions open • Dive into Robotics, PCB design & IoT •</span>
+            </div>
+          </div>
+        </div>
+
         {/* Core Offerings - within the same video background */}
         <div className="relative z-10 container mx-auto px-4 pb-16">
           <ScrollReveal direction="up">

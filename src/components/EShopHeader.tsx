@@ -45,16 +45,14 @@ const EShopHeader = ({ searchQuery = '', onSearchChange, hideSearch = false }: E
           <div className={`flex items-center justify-between h-16 md:h-20 gap-2 ${hideSearch ? 'md:flex md:justify-between' : 'md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center md:gap-3'}`}>
             <div className="flex items-center gap-1 sm:gap-1.5 min-w-0 flex-1 md:flex-initial md:shrink-0">
               {/* Menu Button - Opens Category Sidebar (touch-friendly) */}
-              {!isProjectPage && (
-                <button
-                  type="button"
-                  className="p-2 sm:p-2.5 -ml-1 text-foreground hover:bg-secondary active:bg-secondary/80 rounded-lg transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
-                  onClick={() => setIsSidebarOpen(true)}
-                  aria-label="Open categories"
-                >
-                  <Menu className="w-6 h-6" />
-                </button>
-              )}
+              <button
+                type="button"
+                className="p-2 sm:p-2.5 -ml-1 text-foreground hover:bg-secondary active:bg-secondary/80 rounded-lg transition-colors touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center shrink-0"
+                onClick={() => setIsSidebarOpen(true)}
+                aria-label="Open categories"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
 
               {/* Logo + brand text (text always to the right of logo; truncates on narrow phones) */}
               <Link

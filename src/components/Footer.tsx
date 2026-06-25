@@ -1,7 +1,46 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Linkedin, ExternalLink, Youtube, MessageCircle } from 'lucide-react';
+import { visitorsApi } from '../services/api';
 
 const Footer = () => {
+  const [visitorCount, setVisitorCount] = useState(153245); // default fallback matching baseline
+
+  useEffect(() => {
+    const fetchVisitors = async () => {
+      try {
+        const visited = sessionStorage.getItem('platform_visited');
+        let res;
+        if (!visited) {
+          res = await visitorsApi.hit();
+          sessionStorage.setItem('platform_visited', 'true');
+        } else {
+          res = await visitorsApi.get();
+        }
+        if (res.success && res.data) {
+          setVisitorCount(res.data.count);
+        }
+      } catch (err) {
+        console.error('Failed to sync visitor count:', err);
+      }
+    };
+
+    fetchVisitors();
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await visitorsApi.get();
+        if (res.success && res.data) {
+          setVisitorCount(res.data.count);
+        }
+      } catch (err) {
+        // Silent error
+      }
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const quickLinks = [
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/eshop' },
@@ -22,11 +61,11 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/innovative_hubofficial/' },
-    { name: 'Facebook', icon: Facebook, url: 'https://www.facebook.com/people/Innovative-hub/61566aborrar848671/' },
-    { name: 'LinkedIn', icon: Linkedin, url: 'https://linkedin.com/company/innovative-hub' },
+    { name: 'Instagram', icon: Instagram, url: 'https://www.instagram.com/jginnovativehub' },
+    { name: 'Facebook', icon: Facebook, url: 'https://www.facebook.com/share/18CKz7ZSqC/' },
+    { name: 'LinkedIn', icon: Linkedin, url: 'https://www.linkedin.com/company/jg-innovative-hub-pvt-ltd/' },
     { name: 'YouTube', icon: Youtube, url: '#' },
-    { name: 'WhatsApp', icon: MessageCircle, url: '#' },
+    { name: 'WhatsApp', icon: MessageCircle, url: 'https://whatsapp.com/channel/0029Vb8GAtt1NCrPKRvlKr2p' },
   ];
 
   return (
@@ -113,6 +152,10 @@ const Footer = () => {
           <p className="text-xs text-footer-muted text-center sm:text-left">
             © {new Date().getFullYear()} JG Innovative Hub. All rights reserved.
           </p>
+          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-3 py-1.5 text-xs text-footer-muted">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+            <span>Platform Visitors: <strong className="text-white font-mono">{visitorCount.toLocaleString()}</strong></span>
+          </div>
           <p className="text-xs text-footer-muted/60 text-center sm:text-right">
             Providing tools, knowledge, and community to transform ideas into reality.
           </p>
